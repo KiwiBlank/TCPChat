@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading;
-using MessageDefs;
 
 namespace TCPChat_Server
 {
@@ -56,7 +50,7 @@ namespace TCPChat_Server
                     byte[] bytesResized = new byte[i + 1];
                     Array.Copy(bytes, bytesResized, i + 1);
 
-                    
+
                     string byteToString = System.Text.Encoding.ASCII.GetString(bytesResized);
 
                     // Get the text between message and end chars.

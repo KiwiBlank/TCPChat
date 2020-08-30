@@ -1,12 +1,10 @@
-﻿using System;
+﻿using MessageDefs;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using MessageDefs;
 
 namespace TCPChat_Client
 {
