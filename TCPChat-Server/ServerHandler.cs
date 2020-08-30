@@ -25,19 +25,22 @@ namespace TCPChat_Server
                 MessageHandler.NetStreams.Remove(stream);
             }
         }
-        public static void StartServer(Int32 portServer)
+        public static void StartServer(string portServer, string serverIPString)
         {
             Console.Clear();
 
             TcpListener server = null;
             try
             {
+                // Parse
+                Int32 serverPort = Int32.Parse(portServer);
+                IPAddress serverIP = IPAddress.Parse(serverIPString);
 
-                server = new TcpListener(IPAddress.Parse("127.0.0.1"), portServer);
+                server = new TcpListener(serverIP, serverPort);
 
                 server.Start();
 
-                Console.WriteLine("Server has been started");
+                Console.WriteLine("Server has been started on: \n IP: {0} \n Port: {1}", serverIP, serverPort);
 
                 Console.WriteLine("Waiting for a connection... ");
 
@@ -72,7 +75,7 @@ namespace TCPChat_Server
                     NetworkStream stream = client.GetStream();
 
                     //Message client when connected
-                    string connectedMessage = string.Format("Connected to SERVER:");
+                    string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
                     SendMessage(connectedMessage, stream);
 

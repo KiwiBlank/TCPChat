@@ -10,6 +10,10 @@ namespace TCPChat_Client
             bool quitNow = false;
             while (!quitNow)
             {
+                Console.WriteLine("Commands: \n");
+                Console.WriteLine("/connect \n");
+                Console.WriteLine("/quit \n");
+
                 string command = Console.ReadLine();
                 switch (command)
                 {
