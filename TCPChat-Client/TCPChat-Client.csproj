@@ -6,6 +6,10 @@
     <RootNamespace>TCPChat_Client</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\build\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\MessageDefs\MessageDefs.csproj" />
   </ItemGroup>
