@@ -10,7 +10,7 @@ namespace TCPChat_Server
     class ServerHandler
     {
         // Method to send messages from the server to a client.
-        public static void SendMessage(string message, NetworkStream stream)
+        public static void SendMessage(string message, NetworkStream stream, ConsoleColor color)
         {
 
             byte[] messageBytes = Encoding.ASCII.GetBytes(message);
@@ -77,7 +77,7 @@ namespace TCPChat_Server
                     //Message client when connected
                     string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
-                    SendMessage(connectedMessage, stream);
+                    SendMessage(connectedMessage, stream, ConsoleColor.DarkGray);
 
                     Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 

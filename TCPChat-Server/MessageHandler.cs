@@ -1,29 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
+using MessageDefs;
 
 namespace TCPChat_Server
 {
+
     class MessageHandler
     {
         // Keep a list of all current network streams to repeat incoming messages to.
         public static List<NetworkStream> NetStreams = new List<NetworkStream>();
 
-        public static void RepeatToAllClients(string message, TcpClient client)
+
+        // TODO implement serialization for repeating to clients.
+        public static void RepeatToAllClients(string message, TcpClient client, ConsoleColor color)
         {
             for (int i = 0; i < NetStreams.Count; i++)
             {
-                ServerHandler.SendMessage(message, NetStreams[i]);
+                ServerHandler.SendMessage(message, NetStreams[i], color);
             }
         }
 
-        private static string regexMatch(string source, string start, string end)
+
+        // Find the end of stream, to then trim trailing characters.
+        public static int FindEndOfStream(char[] arr)
         {
-            // Get the text in between two points.
-            // This is a temporary fix until i get the json deserialization fixed.
-            return source.Substring((source.IndexOf(start) + start.Length), (source.IndexOf(end) - source.IndexOf(start) - start.Length));
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                try
+                {
+                    // A really bad way to find the end of stream.
+                    // This is to return the point where all trailing bytes should be removed.
+                    if (arr[i] == '}' && arr[i + 1] == ']' && arr[i + 2] == '')
+                    {
+                        return i + 2;
+                    }
+                }
+                catch (IndexOutOfRangeException)
+                {
+                }
+
+            }
+            return 0;
+        }
+        public static void DeserializeText(string text, TcpClient client)
+        {
+            // More than likely don't need a new thread
+            new Thread(() =>
+            {
+
+                int indexToRemove = FindEndOfStream(text.ToCharArray());
+                if (indexToRemove != 0)
+                {
+                    text = text.Remove(indexToRemove);
+
+                }
+                List<MessageFormat> messageList = new List<MessageFormat>();
+                messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
+                
+                string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageList[0].message);
+
+                Console.ForegroundColor = messageList[0].UserNameColor;
+                Console.WriteLine(message);
+                Console.ResetColor();
+
+                RepeatToAllClients(message, client, messageList[0].UserNameColor);
+                messageList.Clear();
+
+
+            }).Start();
 
         }
 
@@ -53,40 +103,7 @@ namespace TCPChat_Server
 
                     string byteToString = System.Text.Encoding.ASCII.GetString(bytesResized);
 
-                    // Get the text between message and end chars.
-                    string messageRegex = regexMatch(byteToString, "[{\"message\":\"", "\"}]");
-
-
-                    string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageRegex);
-
-                    Console.WriteLine(message);
-
-                    RepeatToAllClients(message, client);
-
-                    // Basically, the way I'm handling the incoming network stream
-                    // Adds trailing bytes to each serialized message.
-                    // Which means that it is very unreliable.
-                    // Bad solution is just trimming the string to get the message. :(
-                    /*try
-                    {
-                        List<MessageFormat> messageList = JsonSerializer.Deserialize<List<MessageFormat>>(bytesResized);
-
-                        string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageList[0].message);
-                        Console.WriteLine(message);
-
-                        replyToAllClients(message, client);
-
-                    }
-                    catch (JsonException)
-                    {
-                        for (int ia = 0; ia < bytesResized.Length; ia++)
-                        {
-                            Console.WriteLine(bytesResized[ia]);
-                        }
-
-                    }*/
-
-
+                    DeserializeText(byteToString, client);
 
 
                 }).Start();

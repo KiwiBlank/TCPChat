@@ -1,6 +1,7 @@
 ﻿using MessageDefs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -25,7 +26,14 @@ namespace TCPChat_Client
         {
             Byte[] data = Encoding.ASCII.GetBytes(message);
 
-            stream.Write(data, 0, message.Length);
+            // See Server's MessageHandler (FindEndOfStream method)
+            List<Byte> byteToList = data.ToList();
+            byteToList.Add(0x01); // Used to indicate when data should end.
+            Byte[] dataToArray = byteToList.ToArray();
+
+
+
+            stream.Write(dataToArray, 0, dataToArray.Length);
 
             InputMessage(client, stream);
         }
@@ -37,11 +45,17 @@ namespace TCPChat_Client
             {
                 string messageString = Console.ReadLine();
 
+                // Disallow sending empty information to stream.
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
-                    newMessage.Add(new MessageFormat { message = messageString });
+                    // See the messageformat class in VariableDefines.
+                    // Userchosen variables are defined in confighandler.
+                    newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor });
                     SerializeMessage(newMessage, client, stream);
+                } else
+                {
+                    InputMessage(client, stream);
                 }
 
 
