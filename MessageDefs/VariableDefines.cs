@@ -5,7 +5,8 @@ using System.Net.Sockets;
 namespace MessageDefs
 {
     [Serializable]
-    public class MessageFormat
+    // Inherits the userconfigformat as of now.
+    public class MessageFormat : UserConfigFormat
     {
         public string message { get; set; }
     }
@@ -19,6 +20,7 @@ namespace MessageDefs
         public EndPoint ip { get; set; }
 
         public TcpClient userInfoclient { get; set; }
+
     }
 
     [Serializable]
@@ -27,5 +29,4 @@ namespace MessageDefs
         public string Username { get; set; }
         public ConsoleColor UserNameColor { get; set; }
     }
-
 }
