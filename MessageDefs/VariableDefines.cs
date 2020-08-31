@@ -20,4 +20,12 @@ namespace MessageDefs
 
         public TcpClient userInfoclient { get; set; }
     }
+
+    [Serializable]
+    public class UserConfigFormat
+    {
+        public string Username { get; set; }
+        public ConsoleColor UserNameColor { get; set; }
+    }
+
 }
