@@ -19,7 +19,7 @@ namespace TCPChat_Client
                 MessageHandler.InputMessage(client, stream);
 
                 // Read the incoming stream and output it.
-                MessageHandler.ClientRecieveMessage(client, stream);
+                MessageHandler.ClientRecieveMessage(stream);
             }
             catch (ArgumentNullException e)
             {

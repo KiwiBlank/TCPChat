@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -50,7 +51,7 @@ namespace TCPChat_Client
                     List<MessageFormat> newMessage = new List<MessageFormat>();
                     // See the messageformat class in VariableDefines.
                     // Userchosen variables are defined in confighandler.
-                    newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor });
+                    newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
                     SerializeMessage(newMessage, client, stream);
                 } else
                 {
@@ -62,7 +63,7 @@ namespace TCPChat_Client
         }
 
         // The incoming messages are read and output.
-        public static void ClientRecieveMessage(TcpClient client, NetworkStream stream)
+        public static void ClientRecieveMessage(NetworkStream stream)
         {
             while (true)
             {
@@ -70,7 +71,11 @@ namespace TCPChat_Client
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-                Console.WriteLine("{0}", responseData);
+
+                List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(responseData);
+                OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
+
+                //Console.WriteLine("{0}", responseData);
             }
         }
     }

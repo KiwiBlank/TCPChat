@@ -17,65 +17,14 @@ namespace TCPChat_Server
 
 
         // TODO implement serialization for repeating to clients.
-        public static void RepeatToAllClients(string message, TcpClient client, ConsoleColor color)
+        public static void RepeatToAllClients(string serializedMessage, TcpClient client)
         {
             for (int i = 0; i < NetStreams.Count; i++)
             {
-                ServerHandler.SendMessage(message, NetStreams[i], color);
+                ServerHandler.SendMessage(serializedMessage, NetStreams[i]);
             }
         }
 
-
-        // Find the end of stream, to then trim trailing characters.
-        public static int FindEndOfStream(char[] arr)
-        {
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                try
-                {
-                    // A really bad way to find the end of stream.
-                    // This is to return the point where all trailing bytes should be removed.
-                    if (arr[i] == '}' && arr[i + 1] == ']' && arr[i + 2] == '')
-                    {
-                        return i + 2;
-                    }
-                }
-                catch (IndexOutOfRangeException)
-                {
-                }
-
-            }
-            return 0;
-        }
-        public static void DeserializeText(string text, TcpClient client)
-        {
-            // More than likely don't need a new thread
-            new Thread(() =>
-            {
-
-                int indexToRemove = FindEndOfStream(text.ToCharArray());
-                if (indexToRemove != 0)
-                {
-                    text = text.Remove(indexToRemove);
-
-                }
-                List<MessageFormat> messageList = new List<MessageFormat>();
-                messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
-                
-                string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageList[0].message);
-
-                Console.ForegroundColor = messageList[0].UserNameColor;
-                Console.WriteLine(message);
-                Console.ResetColor();
-
-                RepeatToAllClients(message, client, messageList[0].UserNameColor);
-                messageList.Clear();
-
-
-            }).Start();
-
-        }
 
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
@@ -101,10 +50,13 @@ namespace TCPChat_Server
                     Array.Copy(bytes, bytesResized, i + 1);
 
 
-                    string byteToString = System.Text.Encoding.ASCII.GetString(bytesResized);
+                    string message = System.Text.Encoding.ASCII.GetString(bytesResized);
 
-                    DeserializeText(byteToString, client);
+                    List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(message);
 
+                    OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
+
+                    RepeatToAllClients(message, client);
 
                 }).Start();
             }
