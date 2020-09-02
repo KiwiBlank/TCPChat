@@ -25,7 +25,7 @@ namespace TCPChat_Server
                 MessageHandler.NetStreams.Remove(stream);
             }
         }
-        public static void StartServer(string portServer, string serverIPString)
+        public static void StartServer(string serverIPString, string portServer)
         {
             Console.Clear();
 

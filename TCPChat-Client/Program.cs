@@ -1,8 +1,9 @@
-﻿using System;
+﻿#define DEVMODE
+
+using System;
 using MessageDefs;
 namespace TCPChat_Client
 {
-
     class Program
     {
         static void Main(string[] args)
@@ -16,7 +17,9 @@ namespace TCPChat_Client
                 Console.WriteLine("/connect \n");
                 Console.WriteLine("/config \n");
                 Console.WriteLine("/quit \n");
-
+#if (DEVMODE)
+                inputConnectInfo();
+#else
                 string command = Console.ReadLine();
                 switch (command)
                 {
@@ -30,11 +33,21 @@ namespace TCPChat_Client
                         quitNow = true;
                         break;
                 }
+#endif
+
+
+
             }
         }
         // Prepare connection information.
         public static void inputConnectInfo()
         {
+#if (DEVMODE)
+
+            Connections.Connect("127.0.0.1", "6060");
+
+#else
+            
             Console.WriteLine("Server IP:");
             string serverIp = Console.ReadLine();
 
@@ -42,6 +55,9 @@ namespace TCPChat_Client
             string serverPort = Console.ReadLine();
 
             Connections.Connect(serverIp, Int32.Parse(serverPort));
+
+#endif
+
         }
         public static void configHelp()
         {

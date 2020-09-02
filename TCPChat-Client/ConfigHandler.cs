@@ -33,7 +33,7 @@ namespace TCPChat_Client
         }
         public static void ReadConfig(string configRead)
         {
-            List<UserConfigFormat> userConfig = DeSerializeConfig(configRead);
+            List<UserConfigFormat> userConfig = DeserializeConfig(configRead);
 
             userChosenName = userConfig[0].Username;
             userChosenColor = userConfig[0].UserNameColor;
@@ -46,7 +46,7 @@ namespace TCPChat_Client
 
             return json;
         }
-        public static List<UserConfigFormat> DeSerializeConfig(string config)
+        public static List<UserConfigFormat> DeserializeConfig(string config)
         {
             List<UserConfigFormat> json = JsonSerializer.Deserialize<List<UserConfigFormat>>(config);
 

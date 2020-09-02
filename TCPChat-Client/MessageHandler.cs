@@ -29,9 +29,8 @@ namespace TCPChat_Client
             // See Server's MessageHandler (FindEndOfStream method)
             List<Byte> byteToList = data.ToList();
             byteToList.Add(0x01); // Used to indicate when data should end.
+
             Byte[] dataToArray = byteToList.ToArray();
-
-
 
             stream.Write(dataToArray, 0, dataToArray.Length);
 
