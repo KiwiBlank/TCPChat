@@ -1,37 +1,27 @@
-﻿using System;
+﻿using MessageDefs;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading;
-using MessageDefs;
 
 namespace TCPChat_Server
 {
+
     class MessageHandler
     {
         // Keep a list of all current network streams to repeat incoming messages to.
         public static List<NetworkStream> NetStreams = new List<NetworkStream>();
 
-        public static void RepeatToAllClients(string message, TcpClient client)
+
+        // TODO implement serialization for repeating to clients.
+        public static void RepeatToAllClients(string serializedMessage, TcpClient client)
         {
             for (int i = 0; i < NetStreams.Count; i++)
             {
-                ServerHandler.SendMessage(message, NetStreams[i]);
+                ServerHandler.SendMessage(serializedMessage, NetStreams[i]);
             }
         }
 
-        private static string regexMatch(string source, string start, string end)
-        {
-            // Get the text in between two points.
-            // This is a temporary fix until i get the json deserialization fixed.
-            return source.Substring((source.IndexOf(start) + start.Length), (source.IndexOf(end) - source.IndexOf(start) - start.Length));
-
-        }
 
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
@@ -56,44 +46,14 @@ namespace TCPChat_Server
                     byte[] bytesResized = new byte[i + 1];
                     Array.Copy(bytes, bytesResized, i + 1);
 
-                    
-                    string byteToString = System.Text.Encoding.ASCII.GetString(bytesResized);
 
-                    // Get the text between message and end chars.
-                    string messageRegex = regexMatch(byteToString, "[{\"message\":\"", "\"}]");
+                    string message = System.Text.Encoding.ASCII.GetString(bytesResized);
 
+                    List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(message);
 
-                    string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageRegex);
-
-                    Console.WriteLine(message);
+                    OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
 
                     RepeatToAllClients(message, client);
-
-                    // Basically, the way I'm handling the incoming network stream
-                    // Adds trailing bytes to each serialized message.
-                    // Which means that it is very unreliable.
-                    // Bad solution is just trimming the string to get the message. :(
-                    /*try
-                    {
-                        List<MessageFormat> messageList = JsonSerializer.Deserialize<List<MessageFormat>>(bytesResized);
-
-                        string message = String.Format("{0} : {1}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), messageList[0].message);
-                        Console.WriteLine(message);
-
-                        replyToAllClients(message, client);
-
-                    }
-                    catch (JsonException)
-                    {
-                        for (int ia = 0; ia < bytesResized.Length; ia++)
-                        {
-                            Console.WriteLine(bytesResized[ia]);
-                        }
-
-                    }*/
-
-
-
 
                 }).Start();
             }

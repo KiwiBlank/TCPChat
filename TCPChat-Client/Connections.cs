@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Text;
 
 namespace TCPChat_Client
 {
     class Connections
     {
-        public static void Connect(String server, Int32 port)
+        public static void Connect(String serverIP, string port)
         {
             Console.Clear();
             try
             {
-                TcpClient client = new TcpClient(server, port);
+                Int32 ServerPort = Int32.Parse(port);
+
+                TcpClient client = new TcpClient(serverIP, ServerPort);
                 NetworkStream stream = client.GetStream();
 
                 // Loop to read console input as messages.
                 MessageHandler.InputMessage(client, stream);
 
                 // Read the incoming stream and output it.
-                MessageHandler.ClientRecieveMessage(client, stream);
+                MessageHandler.ClientRecieveMessage(stream);
             }
             catch (ArgumentNullException e)
             {

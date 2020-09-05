@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MessageDefs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using MessageDefs;
 
 namespace TCPChat_Client
 {
@@ -27,7 +27,13 @@ namespace TCPChat_Client
         {
             Byte[] data = Encoding.ASCII.GetBytes(message);
 
-            stream.Write(data, 0, message.Length);
+            // See Server's MessageHandler (FindEndOfStream method)
+            List<Byte> byteToList = data.ToList();
+            byteToList.Add(0x01); // Used to indicate when data should end.
+
+            Byte[] dataToArray = byteToList.ToArray();
+
+            stream.Write(dataToArray, 0, dataToArray.Length);
 
             InputMessage(client, stream);
         }
@@ -39,11 +45,18 @@ namespace TCPChat_Client
             {
                 string messageString = Console.ReadLine();
 
+                // Disallow sending empty information to stream.
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
-                    newMessage.Add(new MessageFormat { message = messageString });
+                    // See the messageformat class in VariableDefines.
+                    // Userchosen variables are defined in confighandler.
+                    newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
                     SerializeMessage(newMessage, client, stream);
+                }
+                else
+                {
+                    InputMessage(client, stream);
                 }
 
 
@@ -51,7 +64,7 @@ namespace TCPChat_Client
         }
 
         // The incoming messages are read and output.
-        public static void ClientRecieveMessage(TcpClient client, NetworkStream stream)
+        public static void ClientRecieveMessage(NetworkStream stream)
         {
             while (true)
             {
@@ -59,7 +72,11 @@ namespace TCPChat_Client
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-                Console.WriteLine("{0}", responseData);
+
+                List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(responseData);
+                OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
+
+                //Console.WriteLine("{0}", responseData);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -11,10 +10,10 @@ namespace TCPChat_Server
     class ServerHandler
     {
         // Method to send messages from the server to a client.
-        public static void SendMessage(string message, NetworkStream stream)
+        public static void SendMessage(string serializedMessage, NetworkStream stream)
         {
 
-            byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+            byte[] messageBytes = Encoding.ASCII.GetBytes(serializedMessage);
             try
             {
                 stream.Write(messageBytes, 0, messageBytes.Length);
@@ -26,19 +25,22 @@ namespace TCPChat_Server
                 MessageHandler.NetStreams.Remove(stream);
             }
         }
-        public static void StartServer(Int32 portServer)
+        public static void StartServer(string serverIPString, string portServer)
         {
             Console.Clear();
 
             TcpListener server = null;
             try
             {
+                // Parse
+                Int32 serverPort = Int32.Parse(portServer);
+                IPAddress serverIP = IPAddress.Parse(serverIPString);
 
-                server = new TcpListener(IPAddress.Parse("127.0.0.1"), portServer);
+                server = new TcpListener(serverIP, serverPort);
 
                 server.Start();
 
-                Console.WriteLine("Server has been started");
+                Console.WriteLine("Server has been started on: \n IP: {0} \n Port: {1}", serverIP, serverPort);
 
                 Console.WriteLine("Waiting for a connection... ");
 
@@ -73,7 +75,7 @@ namespace TCPChat_Server
                     NetworkStream stream = client.GetStream();
 
                     //Message client when connected
-                    string connectedMessage = string.Format("Connected to SERVER:");
+                    string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
                     SendMessage(connectedMessage, stream);
 
