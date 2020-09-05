@@ -1,7 +1,6 @@
-﻿#define DEVMODE
+﻿//#define DEVMODE
 
 using System;
-using MessageDefs;
 namespace TCPChat_Client
 {
     class Program
@@ -47,14 +46,14 @@ namespace TCPChat_Client
             Connections.Connect("127.0.0.1", "6060");
 
 #else
-            
+
             Console.WriteLine("Server IP:");
             string serverIp = Console.ReadLine();
 
             Console.WriteLine("Server Port:");
             string serverPort = Console.ReadLine();
 
-            Connections.Connect(serverIp, Int32.Parse(serverPort));
+            Connections.Connect(serverIp, serverPort);
 
 #endif
 

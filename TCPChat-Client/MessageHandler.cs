@@ -53,7 +53,8 @@ namespace TCPChat_Client
                     // Userchosen variables are defined in confighandler.
                     newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
                     SerializeMessage(newMessage, client, stream);
-                } else
+                }
+                else
                 {
                     InputMessage(client, stream);
                 }

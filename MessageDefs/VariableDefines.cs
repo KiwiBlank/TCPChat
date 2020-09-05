@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
 
 namespace MessageDefs
 {
@@ -15,19 +12,6 @@ namespace MessageDefs
 
         public string IP { get; set; }
     }
-    // TODO Implement this to better identify users.
-    public class UserInfo
-    {
-        public string name { get; set; }
-
-        public int id { get; set; }
-
-        public EndPoint ip { get; set; }
-
-        public TcpClient userInfoclient { get; set; }
-
-    }
-
     [Serializable]
     // The format that the user config should follow.
     public class UserConfigFormat
@@ -38,7 +22,7 @@ namespace MessageDefs
     public class OutputMessage
     {
         // This is the common output method for both server and client.
-        public static void Output (string message, string IP, string username, ConsoleColor color)
+        public static void Output(string message, string IP, string username, ConsoleColor color)
         {
 
             // If IP or username is empty
@@ -50,7 +34,8 @@ namespace MessageDefs
 
                 Console.WriteLine(output);
                 Console.ResetColor();
-            } else
+            }
+            else
             {
                 Console.ForegroundColor = color;
                 string output = String.Format("{0} : {1} - {2}", IP, username, message);
@@ -69,7 +54,7 @@ namespace MessageDefs
             if (indexToRemove != 0)
             {
                 text = text.Remove(indexToRemove);
-            
+
             }
 
             // If the message is corrupt or not in json format, just output as a pure string.

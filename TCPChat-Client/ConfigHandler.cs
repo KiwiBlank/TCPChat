@@ -1,9 +1,8 @@
-﻿using System;
+﻿using MessageDefs;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Json;
-using MessageDefs;
 namespace TCPChat_Client
 {
     class ConfigHandler
@@ -22,7 +21,7 @@ namespace TCPChat_Client
                 defaultConfig.Add(new UserConfigFormat { Username = Environment.MachineName, UserNameColor = ConsoleColor.Gray });
 
                 string serialize = SerializeConfig(defaultConfig);
-                
+
                 File.WriteAllText(fileDir, serialize);
 
             }
