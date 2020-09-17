@@ -38,7 +38,7 @@ namespace TCPChat_Server
         {
 #if (DEVMODE)
 
-            ServerHandler.StartServer("127.0.0.1", "6060");
+            ServerHandler.StartServer("0.0.0.0", "6060");
 
 #else
 
@@ -46,15 +46,8 @@ namespace TCPChat_Server
 
             string serverPort = Console.ReadLine();
 
-            string publicIP = GetPublicIP();
-            Console.WriteLine("IP to listen on:");
-            Console.WriteLine("Recommended Public IP is: {0}", publicIP);
-            Console.WriteLine("Use 127.0.0.1 to listen only on local network.");
-
-
-            string serverIP = Console.ReadLine();
-
-            ServerHandler.StartServer(serverIP, serverPort);
+            // 0.0.0.0 To listen on all network interfaces
+            ServerHandler.StartServer("0.0.0.0", serverPort);
 
 #endif
 
