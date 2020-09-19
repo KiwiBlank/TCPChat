@@ -1,4 +1,4 @@
-﻿using MessageDefs;
+﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,14 +91,14 @@ namespace TCPChat_Client
                 switch (typeOfList)
                 {
                     case 0: // Nothing Found
-                        List<MessageFormat> defaultList = MessageSerialization.DeserializeDefault(text);
+                        List<MessageFormat> defaultList = Serialization.DeserializeDefault(text);
                         break;
                     case 1: // List<MessageFormat>
-                        List<MessageFormat> messageList = MessageSerialization.DeserializeMessageFormat(text);
+                        List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
                         ClientRecievedMessageFormat(messageList);
                         break;
                     case 2: // List<ConntectedMessageFormat>
-                        List<ConntectedMessageFormat> connectList = MessageSerialization.DeserializeConntectedMessageFormat(text);
+                        List<ConntectedMessageFormat> connectList = Serialization.DeserializeConntectedMessageFormat(text);
                         ClientRecievedConnectedMessageFormat(connectList);
                         break;
                     default:

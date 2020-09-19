@@ -1,4 +1,4 @@
-﻿using MessageDefs;
+﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,8 +43,9 @@ namespace TCPChat_Server
 
                 server.Start();
 
-                Console.WriteLine("Server has been started on: \n IP: {0} \n Port: {1}", serverIP, serverPort);
+                Console.WriteLine("Server has been started");
                 Console.WriteLine("Your public IP is: {0}", Program.GetPublicIP());
+                Console.WriteLine("Server Port: {0}", serverPort);
 
                 Console.WriteLine("Waiting for a connection... ");
 
