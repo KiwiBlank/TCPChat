@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
 
 namespace TCPChat_Server
@@ -22,11 +23,13 @@ namespace TCPChat_Server
             }
         }
 
-
+        public static void ServerRecievedMessage(List<MessageFormat> list)
+        {
+            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
+        }
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
         {
-            NetStreams.Add(stream);
 
             byte[] bytes = new byte[8192];
 
@@ -49,11 +52,17 @@ namespace TCPChat_Server
 
                     string message = System.Text.Encoding.ASCII.GetString(bytesResized);
 
-                    List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(message);
 
-                    OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
+                    string text = MessageSerialization.ReturnEndOfStreamString(message);
+                    List<MessageFormat> messageList = MessageSerialization.DeserializeMessageFormat(text);
 
-                    RepeatToAllClients(message, client);
+
+                    // Re-serialize to repeat for clients.
+                    string repeatMessage = JsonSerializer.Serialize(messageList);
+
+                    ServerRecievedMessage(messageList);
+
+                    RepeatToAllClients(repeatMessage, client);
 
                 }).Start();
             }
