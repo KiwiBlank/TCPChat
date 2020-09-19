@@ -1,8 +1,12 @@
-﻿using System;
+﻿using MessageDefs;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 
 namespace TCPChat_Server
@@ -12,7 +16,6 @@ namespace TCPChat_Server
         // Method to send messages from the server to a client.
         public static void SendMessage(string serializedMessage, NetworkStream stream)
         {
-
             byte[] messageBytes = Encoding.ASCII.GetBytes(serializedMessage);
             try
             {
@@ -71,10 +74,31 @@ namespace TCPChat_Server
             {
                 NetworkStream stream = client.GetStream();
 
+                // Add this client to NetStreams to keep track of connection.
+                MessageHandler.NetStreams.Add(stream);
+
+                //Encryption.CreateKeys();
+
                 //Message client when connected
+
+
+                // The worst possible idiotic way to get public key on connect.
+                /* string pubKey;
+                 using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+                 {
+                     RSA.ImportParameters(Encryption.RSAPublicKey);
+                     pubKey = RSA.ToXmlString(false);
+
+
+                 }*/
                 string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
-                SendMessage(connectedMessage, stream);
+                List<ConntectedMessageFormat> newMessage = new List<ConntectedMessageFormat>();
+                
+                newMessage.Add(new ConntectedMessageFormat {connectMessage = connectedMessage, serverName = "Server 1" });
+
+
+                SendMessage(JsonSerializer.Serialize(newMessage), stream);
 
                 Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 

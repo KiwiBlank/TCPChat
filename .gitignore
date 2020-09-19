@@ -341,3 +341,4 @@ healthchecksdb
 
 # Custom Build Folder
 build/*
+/TCPChat-Server/Encryption.cs

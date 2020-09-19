@@ -49,8 +49,9 @@ namespace TCPChat_Client
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
+
                     // See the messageformat class in VariableDefines.
-                    // Userchosen variables are defined in confighandler.
+                    // The formatting for a client's message
                     newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
                     SerializeMessage(newMessage, client, stream);
                 }
@@ -62,7 +63,16 @@ namespace TCPChat_Client
 
             }).Start();
         }
-
+        public static void ClientRecievedMessageFormat(List<MessageFormat> list)
+        {
+            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
+        }
+        public static void ClientRecievedConnectedMessageFormat(List<ConntectedMessageFormat> list)
+        {
+            // TODO Add function to handle connection message.
+            Console.WriteLine("ClientRecievedConnectedMessageFormat");
+            Console.WriteLine(list[0].connectMessage);
+        }
         // The incoming messages are read and output.
         public static void ClientRecieveMessage(NetworkStream stream)
         {
@@ -73,10 +83,29 @@ namespace TCPChat_Client
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
 
-                List<MessageFormat> messageList = MessageSerialization.DeserializeMessage(responseData);
-                OutputMessage.Output(messageList[0].message, messageList[0].IP, messageList[0].Username, messageList[0].UserNameColor);
+                string text = MessageSerialization.ReturnEndOfStreamString(responseData);
 
-                //Console.WriteLine("{0}", responseData);
+                int typeOfList = MessageSerialization.FindTypeOfList(text);
+
+                // This is where I put the actions for each type of message that the client has recieved.
+                switch (typeOfList)
+                {
+                    case 0: // Nothing Found
+                        List<MessageFormat> defaultList = MessageSerialization.DeserializeDefault(text);
+                        break;
+                    case 1: // List<MessageFormat>
+                        List<MessageFormat> messageList = MessageSerialization.DeserializeMessageFormat(text);
+                        ClientRecievedMessageFormat(messageList);
+                        break;
+                    case 2: // List<ConntectedMessageFormat>
+                        List<ConntectedMessageFormat> connectList = MessageSerialization.DeserializeConntectedMessageFormat(text);
+                        ClientRecievedConnectedMessageFormat(connectList);
+                        break;
+                    default:
+                        break;
+                }
+
+
             }
         }
     }

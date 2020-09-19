@@ -1,4 +1,4 @@
-﻿//#define DEVMODE
+﻿#define DEVMODE
 
 using System;
 using System.Net;
