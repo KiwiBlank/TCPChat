@@ -1,4 +1,4 @@
-﻿#define DEVMODE
+﻿//#define DEVMODE
 
 using System;
 namespace TCPChat_Client
@@ -62,7 +62,7 @@ namespace TCPChat_Client
         {
             Console.Clear();
 
-            Console.WriteLine("\nTo change your username and username color, change the userconfig.json in this directory.");
+            Console.WriteLine("\nTo change your username and username color, edit the userconfig.json in this directory.");
             Console.WriteLine("To view what colors are available, please visit:");
             Console.WriteLine("https://docs.microsoft.com/en-us/dotnet/api/system.consolecolor?view=netcore-3.1 \n");
 

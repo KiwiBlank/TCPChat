@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCPChat-Client", "TCPChat-C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCPChat-Server", "TCPChat-Server\TCPChat-Server.csproj", "{3847D745-8D4A-49B7-AA12-444AABAF340F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageDefs", "MessageDefs\MessageDefs.csproj", "{C2A5756F-D3B6-42F0-93F2-307A14E4E2D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonDefines", "MessageDefs\CommonDefines.csproj", "{C2A5756F-D3B6-42F0-93F2-307A14E4E2D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

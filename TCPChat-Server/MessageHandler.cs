@@ -1,4 +1,4 @@
-﻿using MessageDefs;
+﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -54,7 +54,7 @@ namespace TCPChat_Server
 
 
                     string text = MessageSerialization.ReturnEndOfStreamString(message);
-                    List<MessageFormat> messageList = MessageSerialization.DeserializeMessageFormat(text);
+                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
 
 
                     // Re-serialize to repeat for clients.
