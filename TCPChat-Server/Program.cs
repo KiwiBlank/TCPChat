@@ -1,4 +1,4 @@
-﻿//#define DEVMODE
+﻿#define DEVMODE
 
 using System;
 using System.Net;
@@ -11,6 +11,9 @@ namespace TCPChat_Server
 
         static void Main(string[] args)
         {
+
+            ConfigHandler.WriteDefaultConfig();
+
             bool quitNow = false;
             while (!quitNow)
             {

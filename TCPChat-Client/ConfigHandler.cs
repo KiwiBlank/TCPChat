@@ -7,8 +7,6 @@ namespace TCPChat_Client
 {
     class ConfigHandler
     {
-        public static ConsoleColor userChosenColor;
-        public static string userChosenName;
 
         public static void WriteDefaultConfig()
         {
@@ -34,8 +32,8 @@ namespace TCPChat_Client
         {
             List<UserConfigFormat> userConfig = DeserializeConfig(configRead);
 
-            userChosenName = userConfig[0].Username;
-            userChosenColor = userConfig[0].UserNameColor;
+            UserConfigFormat.userChosenName = userConfig[0].Username;
+            UserConfigFormat.userChosenColor = userConfig[0].UserNameColor;
 
         }
 
