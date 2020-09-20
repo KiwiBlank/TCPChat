@@ -92,11 +92,13 @@ namespace TCPChat_Server
 
 
                  }*/
-                string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
+
+                // Default Message
+                //string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
                 List<ConntectedMessageFormat> newMessage = new List<ConntectedMessageFormat>();
                 
-                newMessage.Add(new ConntectedMessageFormat {connectMessage = connectedMessage, serverName = "Server 1" });
+                newMessage.Add(new ConntectedMessageFormat {connectMessage = ServerConfigFormat.serverChosenWelcomeMessage, serverName = ServerConfigFormat.serverChosenName });
 
 
                 SendMessage(JsonSerializer.Serialize(newMessage), stream);

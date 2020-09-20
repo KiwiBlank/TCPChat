@@ -52,7 +52,7 @@ namespace TCPChat_Client
 
                     // See the messageformat class in VariableDefines.
                     // The formatting for a client's message
-                    newMessage.Add(new MessageFormat { message = messageString, Username = ConfigHandler.userChosenName, UserNameColor = ConfigHandler.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
+                    newMessage.Add(new MessageFormat { message = messageString, Username = UserConfigFormat.userChosenName, UserNameColor = UserConfigFormat.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
                     SerializeMessage(newMessage, client, stream);
                 }
                 else
@@ -70,7 +70,6 @@ namespace TCPChat_Client
         public static void ClientRecievedConnectedMessageFormat(List<ConntectedMessageFormat> list)
         {
             // TODO Add function to handle connection message.
-            Console.WriteLine("ClientRecievedConnectedMessageFormat");
             Console.WriteLine(list[0].connectMessage);
         }
         // The incoming messages are read and output.

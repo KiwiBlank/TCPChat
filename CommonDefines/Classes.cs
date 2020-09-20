@@ -27,7 +27,17 @@ namespace CommonDefines
     // The format that the user config should follow.
     public class UserConfigFormat
     {
-        public string Username { get; set; }
+        public static ConsoleColor userChosenColor;
+        public static string userChosenName;
+        public string Username { get; set;  }
         public ConsoleColor UserNameColor { get; set; }
+    }
+    public class ServerConfigFormat
+    {
+        public static string serverChosenName;
+        public static string serverChosenWelcomeMessage;
+
+        public string serverName { get; set; }
+        public string serverWelcomeMessage { get; set; }
     }
 }
