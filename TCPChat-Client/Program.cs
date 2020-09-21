@@ -1,5 +1,6 @@
-﻿#define DEVMODE
+﻿//#define DEVMODE
 
+using CommonDefines;
 using System;
 namespace TCPChat_Client
 {
@@ -8,6 +9,8 @@ namespace TCPChat_Client
         static void Main(string[] args)
         {
             ConfigHandler.WriteDefaultConfig();
+            Encryption.GenerateKeyPair();
+            Encryption.GenerateAESKeys();
 
             bool quitNow = false;
             while (!quitNow)
