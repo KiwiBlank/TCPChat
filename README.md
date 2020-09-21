@@ -2,6 +2,10 @@
   <h1 align="center">KiwiBlank's TCPChat</h3>
   <h4 align="center">Console Chat System using .NET</h3>
 </p>
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/24278929/93818607-e22bd100-fc5a-11ea-96f2-864c0bc24f81.gif" />
+</p>
+
 
 ## Features
 - Client-Server Chat System
