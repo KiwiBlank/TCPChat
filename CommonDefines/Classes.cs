@@ -11,7 +11,6 @@ namespace CommonDefines
         public string serverName { get; set; }
 
         // The server's public key, that all users need to encrypt their message with.
-        //public string publicKey { get; set; }
         public byte[] keyExponent { get; set; }
         public byte[] keyModulus { get; set; }
 
@@ -21,14 +20,7 @@ namespace CommonDefines
     public class MessageFormat : UserConfigFormat
     {
         public string message { get; set; }
-
         public string IP { get; set; }
-
-        // Each client's public key, that the server uses when repeating messages back to users.
-        // TODO Move this to a list of users, so it is not sent every message.
-        public byte[] publicKey { get; set; }
-        public byte[] publicKeyIV { get; set; }
-
     }
     [Serializable]
     // The format that the user config should follow.

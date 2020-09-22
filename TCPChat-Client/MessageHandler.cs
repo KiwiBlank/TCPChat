@@ -82,12 +82,7 @@ namespace TCPChat_Client
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
 
-
-                    byte[] encryptKey = Encryption.EncryptData(Encryption.AESKey, Encryption.clientCopyOfServerPublicKey);
-                    byte[] encryptKeyIV = Encryption.EncryptData(Encryption.AESIV, Encryption.clientCopyOfServerPublicKey);
-
-
-
+                    Console.WriteLine("Client IP: {0}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 
                     // See the messageformat class in VariableDefines.
                     // The formatting for a client's message
@@ -96,9 +91,7 @@ namespace TCPChat_Client
                         message = messageString,
                         Username = UserConfigFormat.userChosenName,
                         UserNameColor = UserConfigFormat.userChosenColor,
-                        IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
-                        publicKey = encryptKey,
-                        publicKeyIV = encryptKeyIV
+                        IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()
                     });
                     SerializeMessage(newMessage, client, stream);
                 }
