@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace CommonDefines
 {
@@ -13,14 +10,16 @@ namespace CommonDefines
 
         public string serverName { get; set; }
 
-        public RSAParameters publicKey { get; set; }
+        // The server's public key, that all users need to encrypt their message with.
+        public byte[] keyExponent { get; set; }
+        public byte[] keyModulus { get; set; }
+
     }
     [Serializable]
     // Inherits the userconfigformat as of now.
     public class MessageFormat : UserConfigFormat
     {
         public string message { get; set; }
-
         public string IP { get; set; }
     }
     [Serializable]
@@ -29,7 +28,7 @@ namespace CommonDefines
     {
         public static ConsoleColor userChosenColor;
         public static string userChosenName;
-        public string Username { get; set;  }
+        public string Username { get; set; }
         public ConsoleColor UserNameColor { get; set; }
     }
     public class ServerConfigFormat

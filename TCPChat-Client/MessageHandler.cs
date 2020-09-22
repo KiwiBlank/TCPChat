@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -31,9 +32,16 @@ namespace TCPChat_Client
             List<Byte> byteToList = data.ToList();
             byteToList.Add(0x01); // Used to indicate when data should end.
 
+            //byte[] testdata = Convert.FromBase64String(message);
             Byte[] dataToArray = byteToList.ToArray();
 
-            stream.Write(dataToArray, 0, dataToArray.Length);
+            // Encrypt Message Data
+            byte[] encrypt = Encryption.AESEncrypt(dataToArray, Encryption.AESKey, Encryption.AESIV);
+
+            // Encrypt Key Data
+            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, dataToArray);
+
+            stream.Write(finalBytes, 0, finalBytes.Length);
 
             InputMessage(client, stream);
         }
@@ -50,9 +58,17 @@ namespace TCPChat_Client
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
 
+                    Console.WriteLine("Client IP: {0}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
+
                     // See the messageformat class in VariableDefines.
                     // The formatting for a client's message
-                    newMessage.Add(new MessageFormat { message = messageString, Username = UserConfigFormat.userChosenName, UserNameColor = UserConfigFormat.userChosenColor, IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() });
+                    newMessage.Add(new MessageFormat
+                    {
+                        message = messageString,
+                        Username = UserConfigFormat.userChosenName,
+                        UserNameColor = UserConfigFormat.userChosenColor,
+                        IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()
+                    });
                     SerializeMessage(newMessage, client, stream);
                 }
                 else
@@ -63,15 +79,7 @@ namespace TCPChat_Client
 
             }).Start();
         }
-        public static void ClientRecievedMessageFormat(List<MessageFormat> list)
-        {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
-        }
-        public static void ClientRecievedConnectedMessageFormat(List<ConntectedMessageFormat> list)
-        {
-            // TODO Add function to handle connection message.
-            Console.WriteLine(list[0].connectMessage);
-        }
+
         // The incoming messages are read and output.
         public static void ClientRecieveMessage(NetworkStream stream)
         {
@@ -81,6 +89,8 @@ namespace TCPChat_Client
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
+
+                //Console.WriteLine("Response Data: {0}", responseData);
 
                 string text = MessageSerialization.ReturnEndOfStreamString(responseData);
 
@@ -94,17 +104,15 @@ namespace TCPChat_Client
                         break;
                     case 1: // List<MessageFormat>
                         List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
-                        ClientRecievedMessageFormat(messageList);
+                        OutputMessage.ClientRecievedMessageFormat(messageList);
                         break;
                     case 2: // List<ConntectedMessageFormat>
                         List<ConntectedMessageFormat> connectList = Serialization.DeserializeConntectedMessageFormat(text);
-                        ClientRecievedConnectedMessageFormat(connectList);
+                        OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
                         break;
                     default:
                         break;
                 }
-
-
             }
         }
     }

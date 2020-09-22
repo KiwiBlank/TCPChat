@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -78,27 +77,22 @@ namespace TCPChat_Server
                 // Add this client to NetStreams to keep track of connection.
                 MessageHandler.NetStreams.Add(stream);
 
-                //Encryption.CreateKeys();
-
-                //Message client when connected
-
-
-                // The worst possible idiotic way to get public key on connect.
-                /* string pubKey;
-                 using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                 {
-                     RSA.ImportParameters(Encryption.RSAPublicKey);
-                     pubKey = RSA.ToXmlString(false);
-
-
-                 }*/
 
                 // Default Message
                 //string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
                 List<ConntectedMessageFormat> newMessage = new List<ConntectedMessageFormat>();
-                
-                newMessage.Add(new ConntectedMessageFormat {connectMessage = ServerConfigFormat.serverChosenWelcomeMessage, serverName = ServerConfigFormat.serverChosenName });
+
+
+
+                newMessage.Add(new ConntectedMessageFormat
+                {
+                    connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
+                    serverName = ServerConfigFormat.serverChosenName,
+                    keyExponent = Encryption.RSAExponent,
+                    keyModulus = Encryption.RSAModulus
+                });
+
 
 
                 SendMessage(JsonSerializer.Serialize(newMessage), stream);

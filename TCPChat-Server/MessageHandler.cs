@@ -23,10 +23,6 @@ namespace TCPChat_Server
             }
         }
 
-        public static void ServerRecievedMessage(List<MessageFormat> list)
-        {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
-        }
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
         {
@@ -49,18 +45,18 @@ namespace TCPChat_Server
                     byte[] bytesResized = new byte[i + 1];
                     Array.Copy(bytes, bytesResized, i + 1);
 
+                    string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
 
-                    string message = System.Text.Encoding.ASCII.GetString(bytesResized);
-
-
-                    string text = MessageSerialization.ReturnEndOfStreamString(message);
-                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
-
+                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
+                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
                     // Re-serialize to repeat for clients.
+                    // TODO Implement Server Encryption for repeating messages.
+                    // At the moment only the client encrypts its messages.
+
                     string repeatMessage = JsonSerializer.Serialize(messageList);
 
-                    ServerRecievedMessage(messageList);
+                    OutputMessage.ServerRecievedMessage(messageList);
 
                     RepeatToAllClients(repeatMessage, client);
 
