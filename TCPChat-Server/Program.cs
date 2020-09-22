@@ -14,7 +14,7 @@ namespace TCPChat_Server
         {
 
             ConfigHandler.WriteDefaultConfig();
-            Encryption.GenerateKeyPair();
+            Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
 
             bool quitNow = false;

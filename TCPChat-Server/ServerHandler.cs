@@ -89,8 +89,8 @@ namespace TCPChat_Server
                 {
                     connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
                     serverName = ServerConfigFormat.serverChosenName,
-                    keyExponent = Encryption.rsaExponent,
-                    keyModulus = Encryption.rsaModulus
+                    keyExponent = Encryption.RSAExponent,
+                    keyModulus = Encryption.RSAModulus
                 });
 
 

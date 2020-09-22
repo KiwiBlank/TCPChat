@@ -9,7 +9,7 @@ namespace TCPChat_Client
         static void Main(string[] args)
         {
             ConfigHandler.WriteDefaultConfig();
-            Encryption.GenerateKeyPair();
+            Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
 
             bool quitNow = false;

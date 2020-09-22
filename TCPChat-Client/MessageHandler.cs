@@ -23,33 +23,10 @@ namespace TCPChat_Client
 
         }
 
-        public static byte[] AppendKeyToMessage(byte[] data, byte[] IV, byte[] key, byte[] data2)
-        {
-            List<byte> listKey = new List<byte>();
-            List<byte> listMain = new List<byte>();
-
-            // Add the keys to a separate list
-            listKey.AddRange(key);
-            listKey.AddRange(IV);
-            byte[] byteKeyArray = listKey.ToArray();
-
-            // 256 Bytes
-            byte[] encryptKey = Encryption.EncryptData(byteKeyArray, Encryption.clientCopyOfServerPublicKey);
-
-            listMain.AddRange(encryptKey);
-            listMain.AddRange(data);
-            byte[] finalBytes = listMain.ToArray();
-
-
-            return finalBytes;
-
-
-        }
         // Write to the stream, then continue looping for new console input.
         public static void SendMessage(string message, TcpClient client, NetworkStream stream)
         {
             Byte[] data = Encoding.ASCII.GetBytes(message);
-
 
             // See Server's MessageHandler (FindEndOfStream method)
             List<Byte> byteToList = data.ToList();
@@ -62,8 +39,7 @@ namespace TCPChat_Client
             byte[] encrypt = Encryption.AESEncrypt(dataToArray, Encryption.AESKey, Encryption.AESIV);
 
             // Encrypt Key Data
-            byte[] finalBytes = AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, dataToArray);
-
+            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, dataToArray);
 
             stream.Write(finalBytes, 0, finalBytes.Length);
 
@@ -103,21 +79,7 @@ namespace TCPChat_Client
 
             }).Start();
         }
-        public static void ClientRecievedMessageFormat(List<MessageFormat> list)
-        {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
-        }
-        public static void ClientRecievedConnectedMessageFormat(List<ConntectedMessageFormat> list)
-        {
-            // Output Info
-            Console.WriteLine(list[0].serverName);
-            Console.WriteLine(list[0].connectMessage);
 
-            // Encryption
-            RSAParameters key = Encryption.RSAParamaterCombiner(list[0].keyModulus, list[0].keyExponent);
-            Encryption.clientCopyOfServerPublicKey = key;
-
-        }
         // The incoming messages are read and output.
         public static void ClientRecieveMessage(NetworkStream stream)
         {
@@ -142,17 +104,15 @@ namespace TCPChat_Client
                         break;
                     case 1: // List<MessageFormat>
                         List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
-                        ClientRecievedMessageFormat(messageList);
+                        OutputMessage.ClientRecievedMessageFormat(messageList);
                         break;
                     case 2: // List<ConntectedMessageFormat>
                         List<ConntectedMessageFormat> connectList = Serialization.DeserializeConntectedMessageFormat(text);
-                        ClientRecievedConnectedMessageFormat(connectList);
+                        OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
                         break;
                     default:
                         break;
                 }
-
-
             }
         }
     }
