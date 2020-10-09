@@ -1,7 +1,9 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 
@@ -17,9 +19,10 @@ namespace TCPChat_Server
         // TODO implement serialization for repeating to clients.
         public static void RepeatToAllClients(string serializedMessage, TcpClient client)
         {
+            byte[] data = Encoding.ASCII.GetBytes(serializedMessage);
             for (int i = 0; i < NetStreams.Count; i++)
             {
-                ServerHandler.SendMessage(serializedMessage, NetStreams[i]);
+                ServerHandler.SendMessage(data, NetStreams[i]);
             }
         }
 
@@ -44,6 +47,7 @@ namespace TCPChat_Server
 
                     byte[] bytesResized = new byte[i + 1];
                     Array.Copy(bytes, bytesResized, i + 1);
+
 
                     string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
 

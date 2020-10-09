@@ -2,23 +2,27 @@
 
 namespace CommonDefines
 {
+    public enum MessageTypes : byte
+    {
+        MESSAGE = 0,
+        CONNECTION = 1,
+        WELCOME = 2
+    }
     [Serializable]
-
     public class ConntectedMessageFormat
     {
+        public MessageTypes messageType { get; set; }
         public string connectMessage { get; set; }
-
         public string serverName { get; set; }
-
         // The server's public key, that all users need to encrypt their message with.
         public byte[] keyExponent { get; set; }
         public byte[] keyModulus { get; set; }
-
     }
     [Serializable]
     // Inherits the userconfigformat as of now.
     public class MessageFormat : UserConfigFormat
     {
+        public MessageTypes messageType { get; set; }
         public string message { get; set; }
         public string IP { get; set; }
     }

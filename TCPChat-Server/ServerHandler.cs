@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,12 +14,11 @@ namespace TCPChat_Server
     class ServerHandler
     {
         // Method to send messages from the server to a client.
-        public static void SendMessage(string serializedMessage, NetworkStream stream)
+        public static void SendMessage(byte[] data, NetworkStream stream)
         {
-            byte[] messageBytes = Encoding.ASCII.GetBytes(serializedMessage);
             try
             {
-                stream.Write(messageBytes, 0, messageBytes.Length);
+                stream.Write(data, 0, data.Length);
 
             }
             // When a user disconnects, it has to be removed to not attempt to access a disposed object.
@@ -83,10 +83,9 @@ namespace TCPChat_Server
 
                 List<ConntectedMessageFormat> newMessage = new List<ConntectedMessageFormat>();
 
-
-
                 newMessage.Add(new ConntectedMessageFormat
                 {
+                    messageType = MessageTypes.WELCOME,
                     connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
                     serverName = ServerConfigFormat.serverChosenName,
                     keyExponent = Encryption.RSAExponent,
@@ -94,8 +93,7 @@ namespace TCPChat_Server
                 });
 
 
-
-                SendMessage(JsonSerializer.Serialize(newMessage), stream);
+                SerializePrepareWelcome(newMessage, stream);
 
                 Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 
@@ -105,22 +103,25 @@ namespace TCPChat_Server
                 MessageHandler.RecieveMessage(stream, client);
 
             }
-            catch (InvalidOperationException e)
-            {
-                Console.WriteLine("InvalidOperationException: {0}", e);
-                client.Close();
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("IOException: {0}", e);
-                client.Close();
-
-            }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e);
                 client.Close();
             }
         }
+        public static void SerializePrepareWelcome(List<ConntectedMessageFormat> message, NetworkStream stream)
+        {
+            string json = JsonSerializer.Serialize(message);
+
+            Byte[] data = Encoding.ASCII.GetBytes(json);
+            List<Byte> byteToList = data.ToList();
+
+            byteToList.Add(0x01); // Add end char
+
+            Byte[] dataToArray = byteToList.ToArray();
+
+            SendMessage(dataToArray, stream);
+        }
+
     }
 }

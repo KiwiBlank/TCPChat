@@ -14,33 +14,27 @@ namespace CommonDefines
         public static int FindTypeOfList(string message)
         {
 
-            List<MessageFormat> messageFormatList = new List<MessageFormat>();
-            messageFormatList = JsonSerializer.Deserialize<List<MessageFormat>>(message);
+            // Doesn't matter what list type it is, as all of them have the messageType property.
+            List<MessageFormat> typeList = new List<MessageFormat>();
+            typeList = JsonSerializer.Deserialize<List<MessageFormat>>(message);
 
-            // Has to be constant value that can never be null for this check to work.
-            if (messageFormatList[0].message != null)
+            switch (typeList[0].messageType)
             {
-                return 1;
+                case MessageTypes.MESSAGE:
+                    return 1;
+                case MessageTypes.WELCOME:
+                    return 2;
+                default:
+                    return 0;
             }
-
-            List<ConntectedMessageFormat> conntectedMessageFormatList = new List<ConntectedMessageFormat>();
-            conntectedMessageFormatList = JsonSerializer.Deserialize<List<ConntectedMessageFormat>>(message);
-
-            // Has to be constant value that can never be null for this check to work.
-            if (conntectedMessageFormatList[0].connectMessage != null)
-            {
-                return 2;
-            }
-            return 0;
-
         }
         public static string ReturnEndOfStreamString(string text)
         {
             int indexToRemove = FindEndOfStream(text.ToCharArray());
             if (indexToRemove != 0)
             {
+                // Find the location of 0x01 end char.
                 text = text.Remove(indexToRemove);
-
             }
             return text;
         }
@@ -55,9 +49,9 @@ namespace CommonDefines
                 {
                     // A really bad way to find the end of stream.
                     // This is to return the point where all trailing bytes should be removed.
-                    if (arr[i] == '}' && arr[i + 1] == ']' && arr[i + 2] == '')
+                    if (arr[i] == 0x01)
                     {
-                        return i + 2;
+                        return i;
                     }
                 }
                 catch (IndexOutOfRangeException)

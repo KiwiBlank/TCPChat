@@ -14,32 +14,28 @@ namespace TCPChat_Client
     class MessageHandler
     {
         /// Serialize the messageFormat with json to transmit.
-        public static void SerializeMessage(List<MessageFormat> message, TcpClient client, NetworkStream stream)
+        public static void SerializePrepareMessage(List<MessageFormat> message, TcpClient client, NetworkStream stream)
         {
-
-            // stream.Write(message, 0, message.Length);
             string json = JsonSerializer.Serialize(message);
-            SendMessage(json, client, stream);
 
+            Byte[] data = Encoding.ASCII.GetBytes(json);
+            List<Byte> byteToList = data.ToList();
+
+            byteToList.Add(0x01); // Add end char
+
+            Byte[] dataToArray = byteToList.ToArray();
+
+            SendMessage(dataToArray, client, stream);
         }
 
         // Write to the stream, then continue looping for new console input.
-        public static void SendMessage(string message, TcpClient client, NetworkStream stream)
-        {
-            Byte[] data = Encoding.ASCII.GetBytes(message);
-
-            // See Server's MessageHandler (FindEndOfStream method)
-            List<Byte> byteToList = data.ToList();
-            byteToList.Add(0x01); // Used to indicate when data should end.
-
-            //byte[] testdata = Convert.FromBase64String(message);
-            Byte[] dataToArray = byteToList.ToArray();
-
+        public static void SendMessage(byte[] message, TcpClient client, NetworkStream stream) 
+        { 
             // Encrypt Message Data
-            byte[] encrypt = Encryption.AESEncrypt(dataToArray, Encryption.AESKey, Encryption.AESIV);
+            byte[] encrypt = Encryption.AESEncrypt(message, Encryption.AESKey, Encryption.AESIV);
 
             // Encrypt Key Data
-            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, dataToArray);
+            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, message);
 
             stream.Write(finalBytes, 0, finalBytes.Length);
 
@@ -64,12 +60,13 @@ namespace TCPChat_Client
                     // The formatting for a client's message
                     newMessage.Add(new MessageFormat
                     {
+                        messageType = MessageTypes.MESSAGE,
                         message = messageString,
                         Username = UserConfigFormat.userChosenName,
                         UserNameColor = UserConfigFormat.userChosenColor,
                         IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()
                     });
-                    SerializeMessage(newMessage, client, stream);
+                    SerializePrepareMessage(newMessage, client, stream);
                 }
                 else
                 {
@@ -87,6 +84,7 @@ namespace TCPChat_Client
             {
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
+
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
 
