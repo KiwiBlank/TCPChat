@@ -69,8 +69,7 @@ namespace TCPChat_Client
                         messageType = MessageTypes.MESSAGE,
                         message = messageString,
                         Username = UserConfigFormat.userChosenName,
-                        UserNameColor = UserConfigFormat.userChosenColor,
-                        IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()
+                        UserNameColor = UserConfigFormat.userChosenColor
                     });
                     SerializePrepareMessage(newMessage, client, stream, true, true);
                 }

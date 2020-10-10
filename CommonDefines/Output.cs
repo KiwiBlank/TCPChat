@@ -8,12 +8,12 @@ namespace CommonDefines
     {
         public static void ServerRecievedMessage(List<MessageFormat> list)
         {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
+            OutputMessage.OutputMessageWithColor(list[0].message, list[0].Username, list[0].UserNameColor);
         }
 
         public static void ClientRecievedMessageFormat(List<MessageFormat> list)
         {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
+            OutputMessage.OutputMessageWithColor(list[0].message, list[0].Username, list[0].UserNameColor);
         }
         public static void ClientRecievedConnectedMessageFormat(List<WelcomeMessageFormat> list)
         {
@@ -34,11 +34,11 @@ namespace CommonDefines
 
         }
         // This is the common output method for both server and client.
-        public static void OutputMessageWithColor(string message, string IP, string username, ConsoleColor color)
+        public static void OutputMessageWithColor(string message, string username, ConsoleColor color)
         {
 
             Console.ForegroundColor = color;
-            string output = String.Format("{0} : {1} - {2}", IP, username, message);
+            string output = String.Format("{0}: {1}", username, message);
 
             Console.WriteLine(output);
             Console.ResetColor();

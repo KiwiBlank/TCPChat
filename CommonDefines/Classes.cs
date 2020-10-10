@@ -41,7 +41,6 @@ namespace CommonDefines
     {
         public MessageTypes messageType { get; set; }
         public string message { get; set; }
-        public string IP { get; set; }
     }
     [Serializable]
     // The format that the user config should follow.

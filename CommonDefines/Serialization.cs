@@ -40,7 +40,7 @@ namespace CommonDefines
         {
             List<MessageFormat> messageList = new List<MessageFormat>();
 
-            messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray, IP = null });
+            messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray});
 
             return messageList;
         }
