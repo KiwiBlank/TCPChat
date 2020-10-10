@@ -14,7 +14,7 @@ namespace TCPChat_Client
     class MessageHandler
     {
         /// Serialize the messageFormat with json to transmit.
-        public static void SerializePrepareMessage <T> (List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
+        public static void SerializePrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
         {
             string json = Serialization.Serialize(message);
 
@@ -25,7 +25,7 @@ namespace TCPChat_Client
             {
                 EncryptSendMessage(data, client, stream);
 
-            } 
+            }
             // Does not encrypt, just sends.
             else
             {
@@ -45,7 +45,7 @@ namespace TCPChat_Client
             byte[] encrypt = Encryption.AESEncrypt(message, Encryption.AESKey, Encryption.AESIV);
 
             // Encrypt Key Data
-            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, message);
+            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, Encryption.clientCopyOfServerPublicKey);
 
             StreamHandler.WriteToStream(stream, finalBytes);
         }
@@ -92,29 +92,24 @@ namespace TCPChat_Client
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
-
-                string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-
-                string text = MessageSerialization.ReturnEndOfStreamString(responseData);
-
-                int typeOfList = MessageSerialization.FindTypeOfList(text);
-
-                // This is where I put the actions for each type of message that the client has recieved.
-                switch (typeOfList)
+                // Try catch as to check whether data is valid json.
+                // Not a very future proof solution, but gets the job done.
+                try
                 {
-                    case 0: // Nothing Found
-                        List<MessageFormat> defaultList = Serialization.DeserializeDefault(text);
-                        break;
-                    case 1: // List<MessageFormat>
-                        List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(text);
-                        OutputMessage.ClientRecievedMessageFormat(messageList);
-                        break;
-                    case 2: // List<ConntectedMessageFormat>
-                        List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
-                        OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
-                        break;
-                    default:
-                        break;
+                    string responseData = Encoding.ASCII.GetString(data, 0, bytes);
+                    string text = MessageSerialization.ReturnEndOfStreamString(responseData);
+
+                    List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
+                    OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
+                }
+                catch (JsonException)
+                {
+
+                    string message = Encryption.DecryptMessageData(data);
+
+                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
+                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+                    OutputMessage.ClientRecievedMessageFormat(messageList);
                 }
             }
         }

@@ -13,18 +13,12 @@ namespace TCPChat_Server
 {
     class ServerHandler
     {
+        public static List<ClientList> activeClients = new List<ClientList>();
+
         // Method to send messages from the server to a client.
         public static void SendMessage(byte[] data, NetworkStream stream)
         {
-            try
-            {
-                StreamHandler.WriteToStream(stream, data);
-            }
-            // When a user disconnects, it has to be removed to not attempt to access a disposed object.
-            catch (ObjectDisposedException)
-            {
-                MessageHandler.NetStreams.Remove(stream);
-            }
+         StreamHandler.WriteToStream(stream, data);
         }
         public static void StartServer(string serverIPString, string portServer)
         {
@@ -46,6 +40,7 @@ namespace TCPChat_Server
                 Console.WriteLine("Server Port: {0}", serverPort);
 
                 Console.WriteLine("Waiting for a connection... ");
+
 
                 while (true)
                 {
@@ -72,9 +67,6 @@ namespace TCPChat_Server
             try
             {
                 NetworkStream stream = client.GetStream();
-
-                // Add this client to NetStreams to keep track of connection.
-                MessageHandler.NetStreams.Add(stream);
 
 
                 // Default Message

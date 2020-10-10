@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 
 namespace CommonDefines
 {
@@ -8,10 +9,17 @@ namespace CommonDefines
         CONNECTION = 1,
         WELCOME = 2
     }
+    // Keeps a list of clients and their RSA public key.
+    public class ClientList
+    {
+        public TcpClient TCPClient { get; set; }
+        public byte[] RSAExponent { get; set; }
+        public byte[] RSAModulus { get; set; }
+
+    }
     public class ConnectionMessageFormat
     {
         public MessageTypes messageType { get; set; }
-
         // Client's public key data.
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -12,17 +13,35 @@ namespace TCPChat_Server
 
     class MessageHandler
     {
-        // Keep a list of all current network streams to repeat incoming messages to.
-        public static List<NetworkStream> NetStreams = new List<NetworkStream>();
-
 
         // TODO implement serialization for repeating to clients.
-        public static void RepeatToAllClients(string serializedMessage, TcpClient client)
+        public static void RepeatToAllClients(List<MessageFormat> list)
         {
-            byte[] data = Encoding.ASCII.GetBytes(serializedMessage);
-            for (int i = 0; i < NetStreams.Count; i++)
+            string json = Serialization.Serialize(list);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                ServerHandler.SendMessage(data, NetStreams[i]);
+                // Encrypt Message Data
+                byte[] encrypt = Encryption.AESEncrypt(data, Encryption.AESKey, Encryption.AESIV);
+
+                RSAParameters publicKeyCombined = Encryption.RSAParamaterCombiner(ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+
+                // Encrypt Key Data
+                byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, publicKeyCombined);
+
+                try
+                {
+                    ServerHandler.SendMessage(finalBytes, ServerHandler.activeClients[i].TCPClient.GetStream());
+                }
+                catch (ObjectDisposedException)
+                {
+
+                    ServerHandler.activeClients.RemoveAt(i);
+
+                }
+
             }
         }
 
@@ -58,7 +77,7 @@ namespace TCPChat_Server
                 if (clientVerified)
                 {
 
-                    string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
+                    string message = Encryption.DecryptMessageData(bytesResized);
 
                     string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
                     List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
@@ -66,12 +85,9 @@ namespace TCPChat_Server
                     // Re-serialize to repeat for clients.
                     // TODO Implement Server Encryption for repeating messages.
                     // At the moment only the client encrypts its messages.
-
-                    string repeatMessage = Serialization.Serialize(messageList);
-
                     OutputMessage.ServerRecievedMessage(messageList);
 
-                    RepeatToAllClients(repeatMessage, client);
+                    RepeatToAllClients(messageList);
                 } else
                 {
                     string message = Encoding.ASCII.GetString(bytesResized);
@@ -79,6 +95,15 @@ namespace TCPChat_Server
                     string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
 
                     List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
+
+                    // Add this client to NetStreams to keep track of connection.
+                    ServerHandler.activeClients.Add(new ClientList
+                    {
+                        TCPClient = client,
+                        RSAExponent = list[0].RSAExponent,
+                        RSAModulus = list[0].RSAModulus
+                    });
+
                     clientVerified = true;
                 }
             }
