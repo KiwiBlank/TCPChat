@@ -12,7 +12,6 @@ namespace TCPChat_Server
     class MessageHandler
     {
 
-        // TODO implement serialization for repeating to clients.
         public static void RepeatToAllClients(List<MessageFormat> list)
         {
             string json = Serialization.Serialize(list);
@@ -80,11 +79,9 @@ namespace TCPChat_Server
                     string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
                     List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-                    // Re-serialize to repeat for clients.
-                    // TODO Implement Server Encryption for repeating messages.
-                    // At the moment only the client encrypts its messages.
                     OutputMessage.ServerRecievedMessage(messageList);
 
+                    // Éncrypts the message and sends it to all clients.
                     RepeatToAllClients(messageList);
                 }
                 else

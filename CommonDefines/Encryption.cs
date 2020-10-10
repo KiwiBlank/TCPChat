@@ -19,6 +19,8 @@ namespace CommonDefines
 
         public const int keySize = 2048;
 
+        public const int keyLength = 256;
+
         public static string DecryptMessageData(byte[] dataMessage)
         {
             // Extract the 256 bytes that make up the AES Key and IV at the beginning of the message.
@@ -37,12 +39,11 @@ namespace CommonDefines
             // Remove the keys from the other message data.
             // The keys are appended at the beginning of the stream
             // As such they are not part of the json formatting and have to be removed.
-            // TODO Simplify This
-            byte[] RemoveKeysFromDataBytes = new byte[dataMessage.Length - 256];
-            Array.Copy(dataMessage, 256, RemoveKeysFromDataBytes, 0, RemoveKeysFromDataBytes.Length);
+
+            byte[] RemoveKeysFromDataBytes = new byte[dataMessage.Length - keyLength];
+            Array.Copy(dataMessage, keyLength, RemoveKeysFromDataBytes, 0, RemoveKeysFromDataBytes.Length);
 
             // Decrypt the main message using the decryped key and IV
-            // TODO Make some sort of visual aid to explain this.
             byte[] AESDecrypt = Encryption.AESDecrypt(RemoveKeysFromDataBytes, AESKey, AESIV);
 
             string message = System.Text.Encoding.ASCII.GetString(AESDecrypt);
@@ -164,10 +165,9 @@ namespace CommonDefines
             List<byte> byteList = new List<byte>();
 
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i < 256)
+                if (i < keyLength) // 256
                 {
                     byteList.Add(data[i]);
                 }
@@ -179,10 +179,9 @@ namespace CommonDefines
         {
             List<byte> byteList = new List<byte>();
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i >= 0 && i < 16)
+                if (i >= 0 && i < 16) // AES IV length
                 {
                     byteList.Add(data[i]);
                 }
@@ -194,10 +193,9 @@ namespace CommonDefines
         {
             List<byte> byteList = new List<byte>();
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i > 15 && i < 48)
+                if (i > 15 && i < 48) // AES Key length
                 {
                     byteList.Add(data[i]);
                 }
