@@ -1,11 +1,9 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 
 namespace TCPChat_Server
@@ -88,7 +86,8 @@ namespace TCPChat_Server
                     OutputMessage.ServerRecievedMessage(messageList);
 
                     RepeatToAllClients(messageList);
-                } else
+                }
+                else
                 {
                     string message = Encoding.ASCII.GetString(bytesResized);
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
 
@@ -40,11 +39,11 @@ namespace CommonDefines
         {
             List<MessageFormat> messageList = new List<MessageFormat>();
 
-            messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray});
+            messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray });
 
             return messageList;
         }
-        public static string Serialize <T>(List<T> list)
+        public static string Serialize<T>(List<T> list)
         {
             string json = JsonSerializer.Serialize(list);
 

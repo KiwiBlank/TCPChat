@@ -49,7 +49,7 @@ namespace CommonDefines
                 {
                     // A really bad way to find the end of stream.
                     // This is to return the point where all trailing bytes should be removed.
-                    if (arr[i] == 0x01 && arr[i+ 1] == 0x01)
+                    if (arr[i] == 0x01 && arr[i + 1] == 0x01)
                     {
                         return i;
                     }

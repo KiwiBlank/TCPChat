@@ -1,12 +1,8 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 
 namespace TCPChat_Server
@@ -18,7 +14,7 @@ namespace TCPChat_Server
         // Method to send messages from the server to a client.
         public static void SendMessage(byte[] data, NetworkStream stream)
         {
-         StreamHandler.WriteToStream(stream, data);
+            StreamHandler.WriteToStream(stream, data);
         }
         public static void StartServer(string serverIPString, string portServer)
         {
