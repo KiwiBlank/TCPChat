@@ -18,7 +18,7 @@ namespace TCPChat_Client
 
                 defaultConfig.Add(new UserConfigFormat { Username = Environment.MachineName, UserNameColor = ConsoleColor.Gray });
 
-                string serialize = SerializeConfig(defaultConfig);
+                string serialize = Serialization.Serialize(defaultConfig);
 
                 File.WriteAllText(fileDir, serialize);
 
@@ -35,13 +35,6 @@ namespace TCPChat_Client
             UserConfigFormat.userChosenName = userConfig[0].Username;
             UserConfigFormat.userChosenColor = userConfig[0].UserNameColor;
 
-        }
-
-        public static string SerializeConfig(List<UserConfigFormat> config)
-        {
-            string json = JsonSerializer.Serialize(config);
-
-            return json;
         }
         public static List<UserConfigFormat> DeserializeConfig(string config)
         {

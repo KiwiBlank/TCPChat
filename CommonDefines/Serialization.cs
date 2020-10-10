@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using System.Text.Json;
 
 namespace CommonDefines
 {
     public class Serialization
     {
+
+        public static List<ConnectionMessageFormat> DeserializeConnectionMessageFormat(string text)
+        {
+            List<ConnectionMessageFormat> messageList = new List<ConnectionMessageFormat>();
+
+            messageList = JsonSerializer.Deserialize<List<ConnectionMessageFormat>>(text);
+
+            return messageList;
+        }
         public static List<MessageFormat> DeserializeMessageFormat(string text)
         {
             List<MessageFormat> messageList = new List<MessageFormat>();
@@ -14,11 +26,11 @@ namespace CommonDefines
 
             return messageList;
         }
-        public static List<ConntectedMessageFormat> DeserializeConntectedMessageFormat(string text)
+        public static List<WelcomeMessageFormat> DeserializeWelcomeMessageFormat(string text)
         {
-            List<ConntectedMessageFormat> messageList = new List<ConntectedMessageFormat>();
+            List<WelcomeMessageFormat> messageList = new List<WelcomeMessageFormat>();
 
-            messageList = JsonSerializer.Deserialize<List<ConntectedMessageFormat>>(text);
+            messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);
 
             return messageList;
         }
@@ -31,6 +43,22 @@ namespace CommonDefines
             messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray, IP = null });
 
             return messageList;
+        }
+        public static string Serialize <T>(List<T> list)
+        {
+            string json = JsonSerializer.Serialize(list);
+
+            return json;
+        }
+        public static byte[] AddEndCharToMessage(string message)
+        {
+            Byte[] data = Encoding.ASCII.GetBytes(message);
+            List<Byte> byteToList = data.ToList();
+
+            byteToList.Add(0x01); // Add end char
+
+            Byte[] dataToArray = byteToList.ToArray();
+            return dataToArray;
         }
     }
 }

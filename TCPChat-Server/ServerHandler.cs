@@ -18,8 +18,7 @@ namespace TCPChat_Server
         {
             try
             {
-                stream.Write(data, 0, data.Length);
-
+                StreamHandler.WriteToStream(stream, data);
             }
             // When a user disconnects, it has to be removed to not attempt to access a disposed object.
             catch (ObjectDisposedException)
@@ -81,9 +80,9 @@ namespace TCPChat_Server
                 // Default Message
                 //string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
-                List<ConntectedMessageFormat> newMessage = new List<ConntectedMessageFormat>();
+                List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
 
-                newMessage.Add(new ConntectedMessageFormat
+                newMessage.Add(new WelcomeMessageFormat
                 {
                     messageType = MessageTypes.WELCOME,
                     connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
@@ -109,18 +108,13 @@ namespace TCPChat_Server
                 client.Close();
             }
         }
-        public static void SerializePrepareWelcome(List<ConntectedMessageFormat> message, NetworkStream stream)
+        public static void SerializePrepareWelcome(List<WelcomeMessageFormat> message, NetworkStream stream)
         {
-            string json = JsonSerializer.Serialize(message);
+            string json = Serialization.Serialize(message);
 
-            Byte[] data = Encoding.ASCII.GetBytes(json);
-            List<Byte> byteToList = data.ToList();
+            byte[] data = Serialization.AddEndCharToMessage(json);
 
-            byteToList.Add(0x01); // Add end char
-
-            Byte[] dataToArray = byteToList.ToArray();
-
-            SendMessage(dataToArray, stream);
+            SendMessage(data, stream);
         }
 
     }

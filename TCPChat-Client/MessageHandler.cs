@@ -14,41 +14,49 @@ namespace TCPChat_Client
     class MessageHandler
     {
         /// Serialize the messageFormat with json to transmit.
-        public static void SerializePrepareMessage(List<MessageFormat> message, TcpClient client, NetworkStream stream)
+        public static void SerializePrepareMessage <T> (List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
         {
-            string json = JsonSerializer.Serialize(message);
+            string json = Serialization.Serialize(message);
 
-            Byte[] data = Encoding.ASCII.GetBytes(json);
-            List<Byte> byteToList = data.ToList();
+            byte[] data = Serialization.AddEndCharToMessage(json);
 
-            byteToList.Add(0x01); // Add end char
+            // Encrypts message and sends.
+            if (Encrypt)
+            {
+                EncryptSendMessage(data, client, stream);
 
-            Byte[] dataToArray = byteToList.ToArray();
-
-            SendMessage(dataToArray, client, stream);
+            } 
+            // Does not encrypt, just sends.
+            else
+            {
+                StreamHandler.WriteToStream(stream, data);
+            }
+            // When message has been sent, return to reading console input.
+            if (loopReadInput)
+            {
+                InputMessage(client, stream);
+            }
         }
 
         // Write to the stream, then continue looping for new console input.
-        public static void SendMessage(byte[] message, TcpClient client, NetworkStream stream) 
-        { 
+        public static void EncryptSendMessage(byte[] message, TcpClient client, NetworkStream stream)
+        {
             // Encrypt Message Data
             byte[] encrypt = Encryption.AESEncrypt(message, Encryption.AESKey, Encryption.AESIV);
 
             // Encrypt Key Data
             byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, message);
 
-            stream.Write(finalBytes, 0, finalBytes.Length);
-
-            InputMessage(client, stream);
+            StreamHandler.WriteToStream(stream, finalBytes);
         }
 
         // Console Read Loop
         public static void InputMessage(TcpClient client, NetworkStream stream)
         {
+
             new Thread(() =>
             {
                 string messageString = Console.ReadLine();
-
                 // Disallow sending empty information to stream.
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
@@ -66,7 +74,7 @@ namespace TCPChat_Client
                         UserNameColor = UserConfigFormat.userChosenColor,
                         IP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString()
                     });
-                    SerializePrepareMessage(newMessage, client, stream);
+                    SerializePrepareMessage(newMessage, client, stream, true, true);
                 }
                 else
                 {
@@ -82,13 +90,27 @@ namespace TCPChat_Client
         {
             while (true)
             {
+                bool emptyData = true;
+
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
 
-                //Console.WriteLine("Response Data: {0}", responseData);
+                Console.WriteLine("Response Data: {0}", responseData);
+
+                for (int i = 0; i < data.Length; i++)
+                {
+                    if (data[i] != 0)
+                    {
+                        emptyData = false;
+                    }
+                }
+                if (emptyData)
+                {
+                    break;
+                }
 
                 string text = MessageSerialization.ReturnEndOfStreamString(responseData);
 
@@ -105,7 +127,7 @@ namespace TCPChat_Client
                         OutputMessage.ClientRecievedMessageFormat(messageList);
                         break;
                     case 2: // List<ConntectedMessageFormat>
-                        List<ConntectedMessageFormat> connectList = Serialization.DeserializeConntectedMessageFormat(text);
+                        List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
                         OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
                         break;
                     default:

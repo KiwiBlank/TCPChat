@@ -29,25 +29,30 @@ namespace TCPChat_Server
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
         {
-
+            bool clientVerified = false;
             byte[] bytes = new byte[8192];
 
-            int iStream;
-
-            while ((iStream = stream.Read(bytes, 0, bytes.Length)) > 0)
+            while (!stream.DataAvailable)
             {
-                new Thread(() =>
+                Thread.Sleep(100);
+            }
+
+            while ((stream.Read(bytes, 0, bytes.Length)) > 0)
+            {
+
+                // I had some issues with trailing zero bytes, and this solves that.
+                int i = bytes.Length - 1;
+                while (bytes[i] == 0)
                 {
-                    // I had some issues with trailing zero bytes, and this solves that.
-                    int i = bytes.Length - 1;
-                    while (bytes[i] == 0)
-                    {
-                        --i;
-                    }
+                    --i;
+                }
 
-                    byte[] bytesResized = new byte[i + 1];
-                    Array.Copy(bytes, bytesResized, i + 1);
+                byte[] bytesResized = new byte[i + 1];
+                Array.Copy(bytes, bytesResized, i + 1);
 
+                if (clientVerified)
+                {
+                    string messagde = Encoding.ASCII.GetString(bytesResized);
 
                     string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
 
@@ -58,13 +63,22 @@ namespace TCPChat_Server
                     // TODO Implement Server Encryption for repeating messages.
                     // At the moment only the client encrypts its messages.
 
-                    string repeatMessage = JsonSerializer.Serialize(messageList);
+                    string repeatMessage = Serialization.Serialize(messageList);
 
                     OutputMessage.ServerRecievedMessage(messageList);
 
                     RepeatToAllClients(repeatMessage, client);
+                } else
+                {
+                    string message = Encoding.ASCII.GetString(bytesResized);
+                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
+                    Console.WriteLine("Connection: {0}", messageFormatted);
+                    List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
+                    clientVerified = true;
+                }
 
-                }).Start();
+
+
             }
         }
 

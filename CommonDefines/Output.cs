@@ -39,13 +39,15 @@ namespace CommonDefines
 
             string message = System.Text.Encoding.ASCII.GetString(AESDecrypt);
 
+
+
             return message;
         }
         public static void ClientRecievedMessageFormat(List<MessageFormat> list)
         {
             OutputMessage.OutputMessageWithColor(list[0].message, list[0].IP, list[0].Username, list[0].UserNameColor);
         }
-        public static void ClientRecievedConnectedMessageFormat(List<ConntectedMessageFormat> list)
+        public static void ClientRecievedConnectedMessageFormat(List<WelcomeMessageFormat> list)
         {
             // Output Info
             Console.WriteLine(list[0].serverName);

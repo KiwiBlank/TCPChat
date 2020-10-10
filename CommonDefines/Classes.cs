@@ -8,8 +8,17 @@ namespace CommonDefines
         CONNECTION = 1,
         WELCOME = 2
     }
+    public class ConnectionMessageFormat
+    {
+        public MessageTypes messageType { get; set; }
+
+        // Client's public key data.
+        public byte[] RSAExponent { get; set; }
+        public byte[] RSAModulus { get; set; }
+
+    }
     [Serializable]
-    public class ConntectedMessageFormat
+    public class WelcomeMessageFormat
     {
         public MessageTypes messageType { get; set; }
         public string connectMessage { get; set; }

@@ -19,7 +19,7 @@ namespace TCPChat_Server
 
                 defaultConfig.Add(new ServerConfigFormat { serverName = "Your Server Name", serverWelcomeMessage = "Welcome to my server!" });
 
-                string serialize = SerializeConfig(defaultConfig);
+                string serialize = Serialization.Serialize(defaultConfig);
 
                 File.WriteAllText(fileDir, serialize);
 
@@ -38,12 +38,6 @@ namespace TCPChat_Server
 
         }
 
-        public static string SerializeConfig(List<ServerConfigFormat> config)
-        {
-            string json = JsonSerializer.Serialize(config);
-
-            return json;
-        }
         public static List<ServerConfigFormat> DeserializeConfig(string config)
         {
             List<ServerConfigFormat> json = JsonSerializer.Deserialize<List<ServerConfigFormat>>(config);

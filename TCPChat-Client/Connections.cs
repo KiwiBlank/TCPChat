@@ -15,6 +15,9 @@ namespace TCPChat_Client
                 TcpClient client = new TcpClient(serverIP, ServerPort);
                 NetworkStream stream = client.GetStream();
 
+                // Send connection message
+                StreamHandler.SendConnectionMessage(client, stream);
+
                 // Loop to read console input as messages.
                 MessageHandler.InputMessage(client, stream);
 

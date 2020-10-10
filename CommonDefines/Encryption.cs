@@ -60,7 +60,7 @@ namespace CommonDefines
             {
                 aes.KeySize = 128;
                 aes.BlockSize = 128;
-                aes.Padding = System.Security.Cryptography.PaddingMode.Zeros;
+                aes.Padding = PaddingMode.Zeros;
                 aes.Key = key;
                 aes.IV = IV;
 
@@ -84,7 +84,7 @@ namespace CommonDefines
             {
                 aes.KeySize = 128;
                 aes.BlockSize = 128;
-                aes.Padding = System.Security.Cryptography.PaddingMode.Zeros;
+                aes.Padding = PaddingMode.Zeros;
                 aes.Key = key;
                 aes.IV = IV;
 
