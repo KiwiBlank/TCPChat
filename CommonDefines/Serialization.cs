@@ -56,7 +56,7 @@ namespace CommonDefines
             List<Byte> byteToList = data.ToList();
 
             byteToList.Add(0x01); // Add end char
-
+            byteToList.Add(0x01);
             Byte[] dataToArray = byteToList.ToArray();
             return dataToArray;
         }

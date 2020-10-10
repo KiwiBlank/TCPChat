@@ -29,7 +29,9 @@ namespace TCPChat_Server
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
         {
+            // Client verified means that the client has sent over its encryption keys, and therefore can send encrypted messages.
             bool clientVerified = false;
+
             byte[] bytes = new byte[8192];
 
             while (!stream.DataAvailable)
@@ -50,9 +52,11 @@ namespace TCPChat_Server
                 byte[] bytesResized = new byte[i + 1];
                 Array.Copy(bytes, bytesResized, i + 1);
 
+                stream.Flush(); // May not do anything.
+                Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
+
                 if (clientVerified)
                 {
-                    string messagde = Encoding.ASCII.GetString(bytesResized);
 
                     string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
 
@@ -71,14 +75,12 @@ namespace TCPChat_Server
                 } else
                 {
                     string message = Encoding.ASCII.GetString(bytesResized);
+
                     string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
-                    Console.WriteLine("Connection: {0}", messageFormatted);
+
                     List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
                     clientVerified = true;
                 }
-
-
-
             }
         }
 

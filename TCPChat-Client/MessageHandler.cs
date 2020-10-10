@@ -62,8 +62,6 @@ namespace TCPChat_Client
                 {
                     List<MessageFormat> newMessage = new List<MessageFormat>();
 
-                    Console.WriteLine("Client IP: {0}", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
-
                     // See the messageformat class in VariableDefines.
                     // The formatting for a client's message
                     newMessage.Add(new MessageFormat
@@ -90,27 +88,12 @@ namespace TCPChat_Client
         {
             while (true)
             {
-                bool emptyData = true;
 
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
 
                 string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-
-                Console.WriteLine("Response Data: {0}", responseData);
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (data[i] != 0)
-                    {
-                        emptyData = false;
-                    }
-                }
-                if (emptyData)
-                {
-                    break;
-                }
 
                 string text = MessageSerialization.ReturnEndOfStreamString(responseData);
 

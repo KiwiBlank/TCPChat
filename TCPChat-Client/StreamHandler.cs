@@ -25,27 +25,6 @@ namespace TCPChat_Client
                 if (__lockWasTaken) System.Threading.Monitor.Exit(__lockObj);
             }
         }
-
-        // Doesn't work, just hangs and client cant send data.
-        // TODO Fix
-        public static byte[] ReadFromStream(NetworkStream stream)
-        {
-            object __lockObj = stream;
-            bool __lockWasTaken = false;
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref __lockWasTaken);
-
-                Byte[] data = new Byte[8192]; // Unsure what this should be atm.
-                stream.Read(data, 0, data.Length);
-                return data;
-            }
-            finally
-            {
-                if (__lockWasTaken) System.Threading.Monitor.Exit(__lockObj);
-            }
-
-        }
         public static void SendConnectionMessage(TcpClient client, NetworkStream stream)
         {
             List<ConnectionMessageFormat> message = new List<ConnectionMessageFormat>();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -32,7 +33,6 @@ namespace CommonDefines
             RSAModulus = rsaPublic.Modulus;
             RSAExponent = rsaPublic.Exponent;
 
-
         }
 
         public static void GenerateAESKeys()
@@ -63,6 +63,7 @@ namespace CommonDefines
                 aes.Padding = PaddingMode.Zeros;
                 aes.Key = key;
                 aes.IV = IV;
+
 
                 using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
                 {
