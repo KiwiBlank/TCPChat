@@ -20,6 +20,7 @@ namespace TCPChat_Server
             bool quitNow = false;
             while (!quitNow)
             {
+                Console.Title = "TCPChat - Server";
                 Console.WriteLine("Commands: \n");
                 Console.WriteLine("/server \n");
                 Console.WriteLine("/quit \n");

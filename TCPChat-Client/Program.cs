@@ -15,6 +15,7 @@ namespace TCPChat_Client
             bool quitNow = false;
             while (!quitNow)
             {
+                Console.Title = "TCPChat - Client";
                 Console.WriteLine("Commands: \n");
                 Console.WriteLine("/connect \n");
                 Console.WriteLine("/config \n");
