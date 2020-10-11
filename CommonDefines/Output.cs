@@ -38,6 +38,7 @@ namespace CommonDefines
         {
 
             Console.ForegroundColor = color;
+
             string output = String.Format("{0}: {1}", username, message);
 
             Console.WriteLine(output);

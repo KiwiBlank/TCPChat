@@ -1,14 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>TCPChat_Server</RootNamespace>
     <ApplicationIcon>tcpchatlogo1.ico</ApplicationIcon>
+    <Authors>Kiwi Blank</Authors>
+    <Company>Kiwi Blank</Company>
+    <PackageProjectUrl>https://github.com/KiwiBlank/TCPChat</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KiwiBlank/TCPChat</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\build\</OutputPath>
+    <VersionSuffix>1.2.0.$([System.DateTime]::UtcNow.ToString(mmff))</VersionSuffix>
+    <AssemblyVersion Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</AssemblyVersion>
+    <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
   </PropertyGroup>
 
   <ItemGroup>

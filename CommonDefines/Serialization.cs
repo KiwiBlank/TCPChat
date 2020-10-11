@@ -8,7 +8,6 @@ namespace CommonDefines
 {
     public class Serialization
     {
-
         public static List<ConnectionMessageFormat> DeserializeConnectionMessageFormat(string text)
         {
             List<ConnectionMessageFormat> messageList = new List<ConnectionMessageFormat>();
@@ -34,15 +33,6 @@ namespace CommonDefines
             return messageList;
         }
 
-        // Just to be used as a backup for if a list can't be identified correctly.
-        public static List<MessageFormat> DeserializeDefault(string text)
-        {
-            List<MessageFormat> messageList = new List<MessageFormat>();
-
-            messageList.Add(new MessageFormat { message = text, Username = null, UserNameColor = ConsoleColor.DarkGray });
-
-            return messageList;
-        }
         public static string Serialize<T>(List<T> list)
         {
             string json = JsonSerializer.Serialize(list);
@@ -55,7 +45,7 @@ namespace CommonDefines
             List<Byte> byteToList = data.ToList();
 
             byteToList.Add(0x01); // Add end char
-            byteToList.Add(0x01);
+
             Byte[] dataToArray = byteToList.ToArray();
             return dataToArray;
         }

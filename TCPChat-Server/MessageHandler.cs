@@ -23,20 +23,20 @@ namespace TCPChat_Server
                 // Encrypt Message Data
                 byte[] encrypt = Encryption.AESEncrypt(data, Encryption.AESKey, Encryption.AESIV);
 
+                // Combine key values.
                 RSAParameters publicKeyCombined = Encryption.RSAParamaterCombiner(ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
 
                 // Encrypt Key Data
                 byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, publicKeyCombined);
 
+                // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
                 try
                 {
                     ServerHandler.SendMessage(finalBytes, ServerHandler.activeClients[i].TCPClient.GetStream());
                 }
                 catch (ObjectDisposedException)
                 {
-
                     ServerHandler.activeClients.RemoveAt(i);
-
                 }
 
             }
@@ -49,11 +49,6 @@ namespace TCPChat_Server
             bool clientVerified = false;
 
             byte[] bytes = new byte[8192];
-
-            while (!stream.DataAvailable)
-            {
-                Thread.Sleep(100);
-            }
 
             while ((stream.Read(bytes, 0, bytes.Length)) > 0)
             {

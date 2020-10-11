@@ -3,6 +3,7 @@ using System.Net.Sockets;
 
 namespace CommonDefines
 {
+    // Types of messages that can be sent, will be deprecated soon.
     public enum MessageTypes : byte
     {
         MESSAGE = 0,
@@ -46,6 +47,7 @@ namespace CommonDefines
     // The format that the user config should follow.
     public class UserConfigFormat
     {
+        // Variables to store the values that the config reader gets.
         public static ConsoleColor userChosenColor;
         public static string userChosenName;
         public string Username { get; set; }
@@ -53,9 +55,9 @@ namespace CommonDefines
     }
     public class ServerConfigFormat
     {
+        // Variables to store the values that the config reader gets.
         public static string serverChosenName;
         public static string serverChosenWelcomeMessage;
-
         public string serverName { get; set; }
         public string serverWelcomeMessage { get; set; }
     }

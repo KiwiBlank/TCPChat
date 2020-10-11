@@ -6,6 +6,7 @@ namespace TCPChat_Client
 {
     public class StreamHandler
     {
+        // Using locks to make sure only one write can be called at at a time.
         public static void WriteToStream(NetworkStream stream, byte[] data)
         {
             object __lockObj = stream;

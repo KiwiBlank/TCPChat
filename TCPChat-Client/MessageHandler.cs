@@ -24,7 +24,7 @@ namespace TCPChat_Client
 
             }
             // Does not encrypt, just sends.
-            else
+            if (!Encrypt)
             {
                 StreamHandler.WriteToStream(stream, data);
             }

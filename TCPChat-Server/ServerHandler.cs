@@ -32,7 +32,7 @@ namespace TCPChat_Server
                 server.Start();
 
                 Console.WriteLine("Server has been started");
-                Console.WriteLine("Your public IP is: {0}", Program.GetPublicIP());
+                //Console.WriteLine("Your public IP is: {0}", Program.GetPublicIP());
                 Console.WriteLine("Server Port: {0}", serverPort);
 
                 Console.WriteLine("Waiting for a connection... ");
@@ -63,10 +63,6 @@ namespace TCPChat_Server
             try
             {
                 NetworkStream stream = client.GetStream();
-
-
-                // Default Message
-                //string connectedMessage = string.Format("Connected to {0}", Program.GetPublicIP());
 
                 List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
 
