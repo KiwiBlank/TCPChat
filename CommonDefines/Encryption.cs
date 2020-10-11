@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -17,6 +18,40 @@ namespace CommonDefines
         public static byte[] AESIV;
 
         public const int keySize = 2048;
+
+        public const int keyLength = 256;
+
+        public static string DecryptMessageData(byte[] dataMessage)
+        {
+            // Extract the 256 bytes that make up the AES Key and IV at the beginning of the message.
+            byte[] keyData = Encryption.ExtractKeyFromMessage(dataMessage);
+
+            // Get the AES Key and IV bytes and decrypt them using the server's private RSA Key
+            // Returns 48 Bytes
+            // 32 Bytes Key
+            // 16 Bytes IV
+            byte[] decryptKeyRSA = Encryption.RSADecrypt(keyData, Encryption.RSAPrivateKey);
+
+            // Separate the Key and IV from decryptKeyRSA
+            byte[] AESKey = Encryption.ExtractKeyFromBytes(decryptKeyRSA);
+            byte[] AESIV = Encryption.ExtractIVFromBytes(decryptKeyRSA);
+
+            // Remove the keys from the other message data.
+            // The keys are appended at the beginning of the stream
+            // As such they are not part of the json formatting and have to be removed.
+
+            byte[] RemoveKeysFromDataBytes = new byte[dataMessage.Length - keyLength];
+            Array.Copy(dataMessage, keyLength, RemoveKeysFromDataBytes, 0, RemoveKeysFromDataBytes.Length);
+
+            // Decrypt the main message using the decryped key and IV
+            byte[] AESDecrypt = Encryption.AESDecrypt(RemoveKeysFromDataBytes, AESKey, AESIV);
+
+            string message = System.Text.Encoding.ASCII.GetString(AESDecrypt);
+
+
+
+            return message;
+        }
         public static void GenerateRSAKeys()
         {
             RSA rsa = RSA.Create(keySize);
@@ -31,7 +66,6 @@ namespace CommonDefines
 
             RSAModulus = rsaPublic.Modulus;
             RSAExponent = rsaPublic.Exponent;
-
 
         }
 
@@ -60,9 +94,10 @@ namespace CommonDefines
             {
                 aes.KeySize = 128;
                 aes.BlockSize = 128;
-                aes.Padding = System.Security.Cryptography.PaddingMode.Zeros;
+                aes.Padding = PaddingMode.Zeros;
                 aes.Key = key;
                 aes.IV = IV;
+
 
                 using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
                 {
@@ -84,7 +119,7 @@ namespace CommonDefines
             {
                 aes.KeySize = 128;
                 aes.BlockSize = 128;
-                aes.Padding = System.Security.Cryptography.PaddingMode.Zeros;
+                aes.Padding = PaddingMode.Zeros;
                 aes.Key = key;
                 aes.IV = IV;
 
@@ -130,10 +165,9 @@ namespace CommonDefines
             List<byte> byteList = new List<byte>();
 
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i < 256)
+                if (i < keyLength) // 256
                 {
                     byteList.Add(data[i]);
                 }
@@ -145,10 +179,9 @@ namespace CommonDefines
         {
             List<byte> byteList = new List<byte>();
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i >= 0 && i < 16)
+                if (i >= 0 && i < 16) // AES IV length
                 {
                     byteList.Add(data[i]);
                 }
@@ -160,10 +193,9 @@ namespace CommonDefines
         {
             List<byte> byteList = new List<byte>();
 
-            // TODO Simplify This
             for (int i = 0; i < data.Length; i++)
             {
-                if (i > 15 && i < 48)
+                if (i > 15 && i < 48) // AES Key length
                 {
                     byteList.Add(data[i]);
                 }
@@ -171,7 +203,7 @@ namespace CommonDefines
             byte[] bytes = byteList.ToArray();
             return bytes;
         }
-        public static byte[] AppendKeyToMessage(byte[] data, byte[] IV, byte[] key, byte[] data2)
+        public static byte[] AppendKeyToMessage(byte[] data, byte[] IV, byte[] key, RSAParameters publicKey)
         {
             List<byte> listKey = new List<byte>();
             List<byte> listMain = new List<byte>();
@@ -182,7 +214,7 @@ namespace CommonDefines
             byte[] byteKeyArray = listKey.ToArray();
 
             // 256 Bytes
-            byte[] encryptKey = Encryption.RSAEncrypt(byteKeyArray, Encryption.clientCopyOfServerPublicKey);
+            byte[] encryptKey = Encryption.RSAEncrypt(byteKeyArray, publicKey);
 
             listMain.AddRange(encryptKey);
             listMain.AddRange(data);

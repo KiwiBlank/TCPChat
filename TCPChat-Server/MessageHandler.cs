@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Text.Json;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 
 namespace TCPChat_Server
@@ -10,57 +12,114 @@ namespace TCPChat_Server
 
     class MessageHandler
     {
-        // Keep a list of all current network streams to repeat incoming messages to.
-        public static List<NetworkStream> NetStreams = new List<NetworkStream>();
 
-
-        // TODO implement serialization for repeating to clients.
-        public static void RepeatToAllClients(string serializedMessage, TcpClient client)
+        public static void RepeatToAllClients(List<MessageFormat> list)
         {
-            for (int i = 0; i < NetStreams.Count; i++)
+            string json = Serialization.Serialize(list);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                ServerHandler.SendMessage(serializedMessage, NetStreams[i]);
+                // Encrypt Message Data
+                byte[] encrypt = Encryption.AESEncrypt(data, Encryption.AESKey, Encryption.AESIV);
+
+                // Combine key values.
+                RSAParameters publicKeyCombined = Encryption.RSAParamaterCombiner(ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+
+                // Encrypt Key Data
+                byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, publicKeyCombined);
+
+                // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
+                try
+                {
+                    ServerHandler.SendMessage(finalBytes, ServerHandler.activeClients[i].TCPClient.GetStream());
+                }
+                catch (ObjectDisposedException)
+                {
+                    ServerHandler.activeClients.RemoveAt(i);
+                }
+
             }
         }
 
         // The loop to recieve incoming packets.
         public static void RecieveMessage(NetworkStream stream, TcpClient client)
         {
+            // Client verified means that the client has sent over its encryption keys, and therefore can send encrypted messages.
+            bool clientVerified = false;
 
             byte[] bytes = new byte[8192];
 
-            int iStream;
-
-            while ((iStream = stream.Read(bytes, 0, bytes.Length)) > 0)
+            while ((stream.Read(bytes, 0, bytes.Length)) > 0)
             {
-                new Thread(() =>
+
+                // I had some issues with trailing zero bytes, and this solves that.
+                int i = bytes.Length - 1;
+                while (bytes[i] == 0)
                 {
-                    // I had some issues with trailing zero bytes, and this solves that.
-                    int i = bytes.Length - 1;
-                    while (bytes[i] == 0)
-                    {
-                        --i;
-                    }
+                    --i;
+                }
 
-                    byte[] bytesResized = new byte[i + 1];
-                    Array.Copy(bytes, bytesResized, i + 1);
+                byte[] bytesResized = new byte[i + 1];
+                Array.Copy(bytes, bytesResized, i + 1);
 
-                    string message = OutputMessage.ServerRecievedEncrypedMessage(bytesResized);
+                stream.Flush(); // May not do anything.
+                Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
+
+                if (clientVerified)
+                {
+
+                    string message = Encryption.DecryptMessageData(bytesResized);
 
                     string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
                     List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-                    // Re-serialize to repeat for clients.
-                    // TODO Implement Server Encryption for repeating messages.
-                    // At the moment only the client encrypts its messages.
-
-                    string repeatMessage = JsonSerializer.Serialize(messageList);
-
                     OutputMessage.ServerRecievedMessage(messageList);
 
-                    RepeatToAllClients(repeatMessage, client);
+                    // Éncrypts the message and sends it to all clients.
+                    RepeatToAllClients(messageList);
+                }
+                else
+                {
+                    string message = Encoding.ASCII.GetString(bytesResized);
 
-                }).Start();
+                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
+
+                    List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
+
+                    // Add this client to NetStreams to keep track of connection.
+                    ServerHandler.activeClients.Add(new ClientList
+                    {
+                        TCPClient = client,
+                        RSAExponent = list[0].RSAExponent,
+                        RSAModulus = list[0].RSAModulus
+                    });
+
+                    clientVerified = true;
+
+                    List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
+
+                    newMessage.Add(new WelcomeMessageFormat
+                    {
+                        messageType = MessageTypes.WELCOME,
+                        connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
+                        serverName = ServerConfigFormat.serverChosenName,
+                        keyExponent = Encryption.RSAExponent,
+                        keyModulus = Encryption.RSAModulus,
+                        ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                    });
+
+
+                    ServerHandler.SerializePrepareWelcome(newMessage, stream);
+
+                    // Check if versions do not match, if not close connection.
+                    if (list[0].ClientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
+                    {
+                        client.Close();
+                    }
+
+                }
             }
         }
 
