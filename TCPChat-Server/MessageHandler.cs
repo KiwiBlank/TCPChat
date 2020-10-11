@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -96,6 +97,28 @@ namespace TCPChat_Server
                     });
 
                     clientVerified = true;
+
+                    List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
+
+                    newMessage.Add(new WelcomeMessageFormat
+                    {
+                        messageType = MessageTypes.WELCOME,
+                        connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
+                        serverName = ServerConfigFormat.serverChosenName,
+                        keyExponent = Encryption.RSAExponent,
+                        keyModulus = Encryption.RSAModulus,
+                        ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                    });
+
+
+                    ServerHandler.SerializePrepareWelcome(newMessage, stream);
+
+                    // Check if versions do not match, if not close connection.
+                    if (list[0].ClientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
+                    {
+                        client.Close();
+                    }
+
                 }
             }
         }

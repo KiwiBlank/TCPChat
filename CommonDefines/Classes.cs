@@ -24,6 +24,7 @@ namespace CommonDefines
         // Client's public key data.
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
+        public string ClientVersion { get; set; }
 
     }
     [Serializable]
@@ -35,6 +36,7 @@ namespace CommonDefines
         // The server's public key, that all users need to encrypt their message with.
         public byte[] keyExponent { get; set; }
         public byte[] keyModulus { get; set; }
+        public string ServerVersion { get; set; }
     }
     [Serializable]
     // Inherits the userconfigformat as of now.

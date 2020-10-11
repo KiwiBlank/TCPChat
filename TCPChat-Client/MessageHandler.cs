@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -96,7 +97,19 @@ namespace TCPChat_Client
                     string text = MessageSerialization.ReturnEndOfStreamString(responseData);
 
                     List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
-                    OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
+
+                    if (VerifyVersion(connectList[0].ServerVersion))
+                    {
+                        OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
+                    }
+                    else
+                    {
+                        stream.Close();
+                        Console.Clear();
+                        Console.WriteLine("Your version of: {0} does not match the server: {1}", Assembly.GetExecutingAssembly().GetName().Version.ToString(), connectList[0].ServerVersion);
+                    }
+
+
                 }
                 catch (JsonException)
                 {
@@ -107,6 +120,19 @@ namespace TCPChat_Client
                     List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
                     OutputMessage.ClientRecievedMessageFormat(messageList);
                 }
+            }
+        }
+        // Method to compare the server's version and client.
+        // The check is also done on the server, but this does another check and outputs a helpful message.
+        public static bool VerifyVersion(string serverVersion)
+        {
+            if (serverVersion == Assembly.GetExecutingAssembly().GetName().Version.ToString())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

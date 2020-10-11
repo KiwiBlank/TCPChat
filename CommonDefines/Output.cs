@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Security.Cryptography;
 
 namespace CommonDefines
@@ -17,6 +18,7 @@ namespace CommonDefines
         }
         public static void ClientRecievedConnectedMessageFormat(List<WelcomeMessageFormat> list)
         {
+
             // Output Info
             Console.WriteLine(list[0].serverName);
             Console.WriteLine(list[0].connectMessage);
@@ -24,6 +26,7 @@ namespace CommonDefines
             // Encryption
             RSAParameters key = Encryption.RSAParamaterCombiner(list[0].keyModulus, list[0].keyExponent);
             Encryption.clientCopyOfServerPublicKey = key;
+
 
         }
         public static void OutputOnlyMessage(string message)

@@ -64,20 +64,6 @@ namespace TCPChat_Server
             {
                 NetworkStream stream = client.GetStream();
 
-                List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
-
-                newMessage.Add(new WelcomeMessageFormat
-                {
-                    messageType = MessageTypes.WELCOME,
-                    connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
-                    serverName = ServerConfigFormat.serverChosenName,
-                    keyExponent = Encryption.RSAExponent,
-                    keyModulus = Encryption.RSAModulus
-                });
-
-
-                SerializePrepareWelcome(newMessage, stream);
-
                 Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 
 

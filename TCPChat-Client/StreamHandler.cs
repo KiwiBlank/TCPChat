@@ -1,6 +1,7 @@
 ﻿using CommonDefines;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace TCPChat_Client
 {
@@ -33,7 +34,8 @@ namespace TCPChat_Client
             {
                 messageType = MessageTypes.CONNECTION,
                 RSAModulus = Encryption.RSAModulus,
-                RSAExponent = Encryption.RSAExponent
+                RSAExponent = Encryption.RSAExponent,
+                ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
             });
             // Do not encrypt and do not read console after.
             MessageHandler.SerializePrepareMessage(message, client, stream, false, false);
