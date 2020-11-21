@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
 
 namespace CommonDefines
 {
@@ -8,7 +6,7 @@ namespace CommonDefines
     public class MessageSerialization
     {
 
-        public static string ReturnEndOfStreamString(string text)
+        public static string ReturnEndOfStream(string text)
         {
             int indexToRemove = FindEndOfStream(text.ToCharArray());
             if (indexToRemove != 0)

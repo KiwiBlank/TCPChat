@@ -1,11 +1,9 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 
 namespace TCPChat_Server
 {
@@ -33,7 +31,8 @@ namespace TCPChat_Server
                 // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
                 try
                 {
-                    ServerHandler.SendMessage(finalBytes, ServerHandler.activeClients[i].TCPClient.GetStream());
+                    StreamHandler.WriteToStream(ServerHandler.activeClients[i].TCPClient.GetStream(), finalBytes);
+
                 }
                 catch (ObjectDisposedException)
                 {
@@ -44,14 +43,12 @@ namespace TCPChat_Server
         }
 
         // The loop to recieve incoming packets.
-        public static void RecieveMessage(NetworkStream stream, TcpClient client)
+        public static void RecieveMessage(ClientInstance instance)
         {
-            // Client verified means that the client has sent over its encryption keys, and therefore can send encrypted messages.
-            bool clientVerified = false;
 
             byte[] bytes = new byte[8192];
 
-            while ((stream.Read(bytes, 0, bytes.Length)) > 0)
+            while ((instance.stream.Read(bytes, 0, bytes.Length)) > 0)
             {
 
                 // I had some issues with trailing zero bytes, and this solves that.
@@ -64,64 +61,79 @@ namespace TCPChat_Server
                 byte[] bytesResized = new byte[i + 1];
                 Array.Copy(bytes, bytesResized, i + 1);
 
-                stream.Flush(); // May not do anything.
                 Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
 
-                if (clientVerified)
+
+
+                // Is client verified, meaning client has established initial connection and communication.
+                if (instance.clientVerified)
                 {
-
-                    string message = Encryption.DecryptMessageData(bytesResized);
-
-                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
-                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
-
-                    OutputMessage.ServerRecievedMessage(messageList);
-
-                    // Éncrypts the message and sends it to all clients.
-                    RepeatToAllClients(messageList);
+                    ClientVerifiedRecieve(instance, bytesResized);
                 }
                 else
                 {
-                    string message = Encoding.ASCII.GetString(bytesResized);
-
-                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
-
-                    List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
-
-                    // Add this client to NetStreams to keep track of connection.
-                    ServerHandler.activeClients.Add(new ClientList
-                    {
-                        TCPClient = client,
-                        RSAExponent = list[0].RSAExponent,
-                        RSAModulus = list[0].RSAModulus
-                    });
-
-                    clientVerified = true;
-
-                    List<WelcomeMessageFormat> newMessage = new List<WelcomeMessageFormat>();
-
-                    newMessage.Add(new WelcomeMessageFormat
-                    {
-                        messageType = MessageTypes.WELCOME,
-                        connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
-                        serverName = ServerConfigFormat.serverChosenName,
-                        keyExponent = Encryption.RSAExponent,
-                        keyModulus = Encryption.RSAModulus,
-                        ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
-                    });
-
-
-                    ServerHandler.SerializePrepareWelcome(newMessage, stream);
-
-                    // Check if versions do not match, if not close connection.
-                    if (list[0].ClientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
-                    {
-                        client.Close();
-                    }
-
+                    ClientNotVerifiedRecieve(instance, bytesResized);
                 }
             }
         }
+        public static void ClientVerifiedRecieve(ClientInstance instance, byte[] bytes)
+        {
+            string message = Encryption.DecryptMessageData(bytes);
 
+            string messageFormatted = MessageSerialization.ReturnEndOfStream(message);
+            List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+
+            OutputMessage.ServerRecievedMessage(messageList);
+
+            // Encrypts the message and sends it to all clients.
+            RepeatToAllClients(messageList);
+        }
+        public static void ClientNotVerifiedRecieve(ClientInstance instance, byte[] bytes)
+        {
+            string messageFormatted = MessageSerialization.ReturnEndOfStream(Encoding.ASCII.GetString(bytes));
+
+            List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
+
+
+
+            // Add this client to NetStreams to keep track of connection.
+            ServerHandler.activeClients.Add(new ClientList
+            {
+                TCPClient = instance.client,
+                RSAExponent = list[0].RSAExponent,
+                RSAModulus = list[0].RSAModulus
+            });
+
+            instance.clientVerified = true;
+
+            List<WelcomeMessageFormat> welcomeMessage = new List<WelcomeMessageFormat>();
+
+            welcomeMessage.Add(new WelcomeMessageFormat
+            {
+                messageType = MessageTypes.WELCOME,
+                connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
+                serverName = ServerConfigFormat.serverChosenName,
+                keyExponent = Encryption.RSAExponent,
+                keyModulus = Encryption.RSAModulus,
+                ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+            });
+
+
+            Serialize(welcomeMessage, instance);
+
+            // Check if versions do not match, if not close connection.
+            /*******  if (list[0].ClientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
+              {
+                  instance.client.Close();
+              }*********************/
+        }
+        public static void Serialize<T>(List<T> message, ClientInstance instance)
+        {
+            string json = Serialization.Serialize(message);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+
+            StreamHandler.WriteToStream(instance.stream, data);
+        }
     }
 }

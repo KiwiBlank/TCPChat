@@ -7,15 +7,17 @@ using System.Threading;
 
 namespace TCPChat_Server
 {
+    public class ClientInstance
+    {
+        public TcpClient client;
+        public NetworkStream stream;
+        // Client verified means that the client has sent over its encryption keys, and therefore can send encrypted messages.
+        public bool clientVerified = false;
+    }
     class ServerHandler
     {
         public static List<ClientList> activeClients = new List<ClientList>();
 
-        // Method to send messages from the server to a client.
-        public static void SendMessage(byte[] data, NetworkStream stream)
-        {
-            StreamHandler.WriteToStream(stream, data);
-        }
         public static void StartServer(string serverIPString, string portServer)
         {
             Console.Clear();
@@ -62,15 +64,19 @@ namespace TCPChat_Server
             // Get a stream object for reading and writing
             try
             {
-                NetworkStream stream = client.GetStream();
+                ClientInstance instance = new ClientInstance();
+                instance.client = client;
+                instance.stream = client.GetStream();
 
                 Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
 
 
                 // Loop to receive all the data sent by the client.
 
-                MessageHandler.RecieveMessage(stream, client);
+                MessageHandler.RecieveMessage(instance);
 
+                // Will check if the client is actually sending and recieiving messages.
+                ClientHeartbeat(instance);
             }
             catch (Exception e)
             {
@@ -78,14 +84,21 @@ namespace TCPChat_Server
                 client.Close();
             }
         }
-        public static void SerializePrepareWelcome(List<WelcomeMessageFormat> message, NetworkStream stream)
+        public static void ClientHeartbeat(ClientInstance instance)
         {
-            string json = Serialization.Serialize(message);
-
-            byte[] data = Serialization.AddEndCharToMessage(json);
-
-            SendMessage(data, stream);
+            bool active = false;
+            for (int i = 0; i < activeClients.Count; i++)
+            {
+                if (activeClients[i].TCPClient == instance.client)
+                {
+                    active = true;
+                }
+            }
+            if (!active)
+            {
+                Console.WriteLine("{0} Was kicked, user did not attempt communication.", ((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString());
+                instance.client.Close();
+            }
         }
-
     }
 }

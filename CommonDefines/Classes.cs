@@ -4,11 +4,13 @@ using System.Net.Sockets;
 namespace CommonDefines
 {
     // Types of messages that can be sent, will be deprecated soon.
-    public enum MessageTypes : byte
+    public enum MessageTypes : int
     {
         MESSAGE = 0,
         CONNECTION = 1,
-        WELCOME = 2
+        WELCOME = 2,
+        SERVER = 3,
+        ENCRYPTED = 4
     }
     // Keeps a list of clients and their RSA public key.
     public class ClientList
