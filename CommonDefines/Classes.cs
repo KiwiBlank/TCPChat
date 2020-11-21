@@ -20,6 +20,14 @@ namespace CommonDefines
         public byte[] RSAModulus { get; set; }
 
     }
+    public class ServerMessageFormat
+    {
+        public MessageTypes messageType { get; set; }
+        public byte[] RSAExponent { get; set; }
+        public byte[] RSAModulus { get; set; }
+        public ConsoleColor color { get; set; }
+        public string message { get; set; }
+    }
     public class ConnectionMessageFormat
     {
         public MessageTypes messageType { get; set; }

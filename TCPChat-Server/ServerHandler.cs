@@ -72,7 +72,6 @@ namespace TCPChat_Server
 
 
                 // Loop to receive all the data sent by the client.
-
                 MessageHandler.RecieveMessage(instance);
 
                 // Will check if the client is actually sending and recieiving messages.

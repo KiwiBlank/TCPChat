@@ -48,8 +48,6 @@ namespace CommonDefines
 
             string message = System.Text.Encoding.ASCII.GetString(AESDecrypt);
 
-
-
             return message;
         }
         public static void GenerateRSAKeys()
@@ -89,7 +87,6 @@ namespace CommonDefines
 
         public static byte[] AESDecrypt(byte[] data, byte[] key, byte[] IV)
         {
-
             using (var aes = Aes.Create())
             {
                 aes.KeySize = 128;
@@ -114,7 +111,6 @@ namespace CommonDefines
         }
         public static byte[] AESEncrypt(byte[] data, byte[] key, byte[] IV)
         {
-
             using (var aes = Aes.Create())
             {
                 aes.KeySize = 128;
@@ -138,8 +134,6 @@ namespace CommonDefines
         }
         public static byte[] RSAEncrypt(byte[] data, RSAParameters publicKey)
         {
-
-
             RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keySize);
 
             csp.ImportParameters(publicKey);
@@ -150,7 +144,6 @@ namespace CommonDefines
         }
         public static byte[] RSADecrypt(byte[] data, RSAParameters privateKey)
         {
-
             RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keySize);
 
             csp.ImportParameters(privateKey);
@@ -163,7 +156,6 @@ namespace CommonDefines
         public static byte[] ExtractKeyFromMessage(byte[] data)
         {
             List<byte> byteList = new List<byte>();
-
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -221,7 +213,6 @@ namespace CommonDefines
             byte[] finalBytes = listMain.ToArray();
 
             return finalBytes;
-
         }
     }
 }

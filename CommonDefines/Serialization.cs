@@ -8,6 +8,14 @@ namespace CommonDefines
 {
     public class Serialization
     {
+        public static List<ServerMessageFormat> DeserializeServerMessageFormat(string text)
+        {
+            List<ServerMessageFormat> messageList = new List<ServerMessageFormat>();
+
+            messageList = JsonSerializer.Deserialize<List<ServerMessageFormat>>(text);
+
+            return messageList;
+        }
         public static List<ConnectionMessageFormat> DeserializeConnectionMessageFormat(string text)
         {
             List<ConnectionMessageFormat> messageList = new List<ConnectionMessageFormat>();

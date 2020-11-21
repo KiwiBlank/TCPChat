@@ -8,16 +8,18 @@ namespace CommonDefines
     {
         public static void ServerRecievedMessage(List<MessageFormat> list)
         {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].Username, list[0].UserNameColor);
+            OutputMessage.OutputMessageColor(list[0].message, list[0].Username, list[0].UserNameColor);
         }
-
+        public static void ClientRecievedServerMessageFormat(List<ServerMessageFormat> list)
+        {
+            OutputMessage.OutputServerMessage(list[0].message, list[0].color);
+        }
         public static void ClientRecievedMessageFormat(List<MessageFormat> list)
         {
-            OutputMessage.OutputMessageWithColor(list[0].message, list[0].Username, list[0].UserNameColor);
+            OutputMessage.OutputMessageColor(list[0].message, list[0].Username, list[0].UserNameColor);
         }
-        public static void ClientRecievedConnectedMessageFormat(List<WelcomeMessageFormat> list)
+        public static void ClientRecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
         {
-
             // Output Info
             Console.WriteLine(list[0].serverName);
             Console.WriteLine(list[0].connectMessage);
@@ -25,27 +27,25 @@ namespace CommonDefines
             // Encryption
             RSAParameters key = Encryption.RSAParamaterCombiner(list[0].keyModulus, list[0].keyExponent);
             Encryption.clientCopyOfServerPublicKey = key;
-
-
-        }
-        public static void OutputOnlyMessage(string message)
-        {
-
-            Console.WriteLine(message);
-            Console.ResetColor();
-
         }
         // This is the common output method for both server and client.
-        public static void OutputMessageWithColor(string message, string username, ConsoleColor color)
+        public static void OutputMessageColor(string message, string username, ConsoleColor color)
         {
-
             Console.ForegroundColor = color;
 
             string output = String.Format("{0}: {1}", username, message);
 
             Console.WriteLine(output);
             Console.ResetColor();
+        }
+        public static void OutputServerMessage(string message, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
 
+            string output = String.Format("SERVER - {0}", message);
+
+            Console.WriteLine(output);
+            Console.ResetColor();
         }
     }
 }

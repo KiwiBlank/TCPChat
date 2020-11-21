@@ -1,6 +1,7 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,7 +11,19 @@ namespace TCPChat_Server
 
     class MessageHandler
     {
+        public static byte[] EncryptMessage(byte[] data, byte[] modulus, byte[] exponent)
+        {
+            // Encrypt Message Data
+            byte[] encrypt = Encryption.AESEncrypt(data, Encryption.AESKey, Encryption.AESIV);
 
+            // Combine key values.
+            RSAParameters publicKeyCombined = Encryption.RSAParamaterCombiner(modulus, exponent);
+
+            // Encrypt Key Data
+            byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, publicKeyCombined);
+
+            return finalBytes;
+        }
         public static void RepeatToAllClients(List<MessageFormat> list)
         {
             string json = Serialization.Serialize(list);
@@ -19,19 +32,11 @@ namespace TCPChat_Server
 
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                // Encrypt Message Data
-                byte[] encrypt = Encryption.AESEncrypt(data, Encryption.AESKey, Encryption.AESIV);
-
-                // Combine key values.
-                RSAParameters publicKeyCombined = Encryption.RSAParamaterCombiner(ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
-
-                // Encrypt Key Data
-                byte[] finalBytes = Encryption.AppendKeyToMessage(encrypt, Encryption.AESKey, Encryption.AESIV, publicKeyCombined);
-
+                byte[] encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
                 // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
                 try
                 {
-                    StreamHandler.WriteToStream(ServerHandler.activeClients[i].TCPClient.GetStream(), finalBytes);
+                    StreamHandler.WriteToStream(ServerHandler.activeClients[i].TCPClient.GetStream(), encrypted);
 
                 }
                 catch (ObjectDisposedException)
@@ -68,15 +73,15 @@ namespace TCPChat_Server
                 // Is client verified, meaning client has established initial connection and communication.
                 if (instance.clientVerified)
                 {
-                    ClientVerifiedRecieve(instance, bytesResized);
+                    VerifiedRecieve(bytesResized);
                 }
                 else
                 {
-                    ClientNotVerifiedRecieve(instance, bytesResized);
+                    NotVerifiedRecieve(instance, bytesResized);
                 }
             }
         }
-        public static void ClientVerifiedRecieve(ClientInstance instance, byte[] bytes)
+        public static void VerifiedRecieve(byte[] bytes)
         {
             string message = Encryption.DecryptMessageData(bytes);
 
@@ -85,15 +90,15 @@ namespace TCPChat_Server
 
             OutputMessage.ServerRecievedMessage(messageList);
 
+
             // Encrypts the message and sends it to all clients.
             RepeatToAllClients(messageList);
         }
-        public static void ClientNotVerifiedRecieve(ClientInstance instance, byte[] bytes)
+        public static void NotVerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
             string messageFormatted = MessageSerialization.ReturnEndOfStream(Encoding.ASCII.GetString(bytes));
 
             List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
-
 
 
             // Add this client to NetStreams to keep track of connection.
@@ -103,6 +108,15 @@ namespace TCPChat_Server
                 RSAExponent = list[0].RSAExponent,
                 RSAModulus = list[0].RSAModulus
             });
+
+            // Check if server and client versions are the same before continuing.
+            if (!VersionCheck(instance, list[0].ClientVersion))
+            {
+                // Remove the item just added to active clients.
+                // The reason it is added before is to have a list to index when sending server message to.
+                ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
+                return;
+            }
 
             instance.clientVerified = true;
 
@@ -119,21 +133,62 @@ namespace TCPChat_Server
             });
 
 
-            Serialize(welcomeMessage, instance);
-
-            // Check if versions do not match, if not close connection.
-            /*******  if (list[0].ClientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
-              {
-                  instance.client.Close();
-              }*********************/
+            Serialize(welcomeMessage, instance, false);
         }
-        public static void Serialize<T>(List<T> message, ClientInstance instance)
+        public static void Serialize<T>(List<T> message, ClientInstance instance, bool encrypt)
         {
             string json = Serialization.Serialize(message);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 
+            if (encrypt)
+            {
+                int index = FindClientKeysIndex(instance.client);
+                data = EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+            }
+
             StreamHandler.WriteToStream(instance.stream, data);
+        }
+        public static bool VersionCheck(ClientInstance instance, string clientVersion)
+        {
+            // Check if versions do not match, if not close connection.
+            if (clientVersion != Assembly.GetExecutingAssembly().GetName().Version.ToString())
+            {
+                string message = String.Format("Your version of: {0} does not match the server version of: {1}",
+                    clientVersion,
+                    Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                ServerMessage(instance, ConsoleColor.Yellow, message);
+                instance.client.Close();
+                return false;
+            }
+            return true;
+        }
+        public static void ServerMessage(ClientInstance instance, ConsoleColor color, string message)
+        {
+            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
+
+            serverMessage.Add(new ServerMessageFormat
+            {
+                messageType = MessageTypes.SERVER,
+                message = message,
+                color = color,
+                RSAExponent = Encryption.RSAExponent,
+                RSAModulus = Encryption.RSAModulus,
+            });
+
+            Serialize(serverMessage, instance, true);
+        }
+        public static int FindClientKeysIndex(TcpClient client)
+        {
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                if (ServerHandler.activeClients[i].TCPClient == client)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

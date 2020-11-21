@@ -11,7 +11,7 @@ namespace TCPChat_Client
     class MessageHandler
     {
         /// Serialize the messageFormat with json to transmit.
-        public static void SerializePrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
+        public static void PrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
         {
             string json = Serialization.Serialize(message);
 
@@ -24,7 +24,7 @@ namespace TCPChat_Client
 
             }
             // Does not encrypt, just sends.
-            if (!Encrypt)
+            else
             {
                 StreamHandler.WriteToStream(stream, data);
             }
@@ -50,7 +50,6 @@ namespace TCPChat_Client
         // Console Read Loop
         public static void InputMessage(TcpClient client, NetworkStream stream)
         {
-
             new Thread(() =>
             {
                 string messageString = Console.ReadLine();
@@ -68,14 +67,12 @@ namespace TCPChat_Client
                         Username = UserConfigFormat.userChosenName,
                         UserNameColor = UserConfigFormat.userChosenColor
                     });
-                    SerializePrepareMessage(newMessage, client, stream, true, true);
+                    PrepareMessage(newMessage, client, stream, true, true);
                 }
                 else
                 {
                     InputMessage(client, stream);
                 }
-
-
             }).Start();
         }
 
@@ -84,7 +81,6 @@ namespace TCPChat_Client
         {
             while (true)
             {
-
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
@@ -103,19 +99,6 @@ namespace TCPChat_Client
                 }
             }
         }
-        // Method to compare the server's version and client.
-        // The check is also done on the server, but this does another check and outputs a helpful message.
-        public static bool VerifyVersion(string serverVersion)
-        {
-            if (serverVersion == Assembly.GetExecutingAssembly().GetName().Version.ToString())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         public static void ClientRecievedWelcomeMessage(byte[] data, Int32 bytes)
         {
             string responseData = Encoding.ASCII.GetString(data, 0, bytes);
@@ -123,8 +106,7 @@ namespace TCPChat_Client
 
             List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
 
-            //REMOVE ME WHEN VERSION CHECK WROKS
-            OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
+            OutputMessage.ClientRecievedWelcomeMessageFormat(connectList);
         }
         public static void ClientRecievedEncryptedMessage(byte[] data)
         {
@@ -139,8 +121,12 @@ namespace TCPChat_Client
             switch (ReturnMessageType(messageBytes))
             {
                 case MessageTypes.MESSAGE:
-                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
-                    OutputMessage.ClientRecievedMessageFormat(messageList);
+                    List<MessageFormat> messageFormatList = Serialization.DeserializeMessageFormat(messageFormatted);
+                    OutputMessage.ClientRecievedMessageFormat(messageFormatList);
+                    break;
+                case MessageTypes.SERVER:
+                    List<ServerMessageFormat> messageList = Serialization.DeserializeServerMessageFormat(messageFormatted);
+                    OutputMessage.ClientRecievedServerMessageFormat(messageList);
                     break;
             }
         }

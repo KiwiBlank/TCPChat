@@ -38,7 +38,7 @@ namespace TCPChat_Client
                 ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
             });
             // Do not encrypt and do not read console after.
-            MessageHandler.SerializePrepareMessage(message, client, stream, false, false);
+            MessageHandler.PrepareMessage(message, client, stream, false, false);
         }
     }
 
