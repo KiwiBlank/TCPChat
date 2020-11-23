@@ -32,7 +32,8 @@ namespace TCPChat_Client
             // The formatting for a client's message
             message.Add(new ConnectionMessageFormat
             {
-                messageType = MessageTypes.CONNECTION,
+                MessageType = MessageTypes.CONNECTION,
+                Username = UserConfigFormat.userChosenName,
                 RSAModulus = Encryption.RSAModulus,
                 RSAExponent = Encryption.RSAExponent,
                 ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()

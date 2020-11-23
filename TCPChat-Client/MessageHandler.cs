@@ -62,8 +62,8 @@ namespace TCPChat_Client
                     // The formatting for a client's message
                     newMessage.Add(new MessageFormat
                     {
-                        messageType = MessageTypes.MESSAGE,
-                        message = messageString,
+                        MessageType = MessageTypes.MESSAGE,
+                        Message = messageString,
                         Username = UserConfigFormat.userChosenName,
                         UserNameColor = UserConfigFormat.userChosenColor
                     });
@@ -106,7 +106,7 @@ namespace TCPChat_Client
 
             List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
 
-            OutputMessage.ClientRecievedWelcomeMessageFormat(connectList);
+            ConsoleOutput.RecievedWelcomeMessageFormat(connectList);
         }
         public static void ClientRecievedEncryptedMessage(byte[] data)
         {
@@ -122,11 +122,11 @@ namespace TCPChat_Client
             {
                 case MessageTypes.MESSAGE:
                     List<MessageFormat> messageFormatList = Serialization.DeserializeMessageFormat(messageFormatted);
-                    OutputMessage.ClientRecievedMessageFormat(messageFormatList);
+                    ConsoleOutput.RecievedMessageFormat(messageFormatList);
                     break;
                 case MessageTypes.SERVER:
                     List<ServerMessageFormat> messageList = Serialization.DeserializeServerMessageFormat(messageFormatted);
-                    OutputMessage.ClientRecievedServerMessageFormat(messageList);
+                    ConsoleOutput.RecievedServerMessageFormat(messageList);
                     break;
             }
         }

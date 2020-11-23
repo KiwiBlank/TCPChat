@@ -4,32 +4,28 @@ using System.Security.Cryptography;
 
 namespace CommonDefines
 {
-    public class OutputMessage
+    public class ConsoleOutput
     {
-        public static void ServerRecievedMessage(List<MessageFormat> list)
+        public static void RecievedServerMessageFormat(List<ServerMessageFormat> list)
         {
-            OutputMessage.OutputMessageColor(list[0].message, list[0].Username, list[0].UserNameColor);
+            CommonDefines.ConsoleOutput.OutputServerMessage(list[0].Message, list[0].Color);
         }
-        public static void ClientRecievedServerMessageFormat(List<ServerMessageFormat> list)
+        public static void RecievedMessageFormat(List<MessageFormat> list)
         {
-            OutputMessage.OutputServerMessage(list[0].message, list[0].color);
+            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UserNameColor);
         }
-        public static void ClientRecievedMessageFormat(List<MessageFormat> list)
-        {
-            OutputMessage.OutputMessageColor(list[0].message, list[0].Username, list[0].UserNameColor);
-        }
-        public static void ClientRecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
+        public static void RecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
         {
             // Output Info
-            Console.WriteLine(list[0].serverName);
-            Console.WriteLine(list[0].connectMessage);
+            Console.WriteLine(list[0].ServerName);
+            Console.WriteLine(list[0].ConnectMessage);
 
             // Encryption
-            RSAParameters key = Encryption.RSAParamaterCombiner(list[0].keyModulus, list[0].keyExponent);
+            RSAParameters key = Encryption.RSAParamaterCombiner(list[0].RSAModulus, list[0].RSAExponent);
             Encryption.clientCopyOfServerPublicKey = key;
         }
         // This is the common output method for both server and client.
-        public static void OutputMessageColor(string message, string username, ConsoleColor color)
+        public static void OutputMessage(string message, string username, ConsoleColor color)
         {
             Console.ForegroundColor = color;
 

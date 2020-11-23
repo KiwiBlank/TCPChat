@@ -17,7 +17,7 @@ namespace TCPChat_Server
             {
                 List<ServerConfigFormat> defaultConfig = new List<ServerConfigFormat>();
 
-                defaultConfig.Add(new ServerConfigFormat { serverName = "Your Server Name", serverWelcomeMessage = "Welcome to my server!" });
+                defaultConfig.Add(new ServerConfigFormat { ServerName = "Your Server Name", ServerWelcomeMessage = "Welcome to my server!" });
 
                 string serialize = Serialization.Serialize(defaultConfig);
 
@@ -33,8 +33,8 @@ namespace TCPChat_Server
         {
             List<ServerConfigFormat> userConfig = DeserializeConfig(configRead);
 
-            ServerConfigFormat.serverChosenName = userConfig[0].serverName;
-            ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].serverWelcomeMessage;
+            ServerConfigFormat.serverChosenName = userConfig[0].ServerName;
+            ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].ServerWelcomeMessage;
 
         }
 

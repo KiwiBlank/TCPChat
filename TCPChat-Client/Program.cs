@@ -21,16 +21,16 @@ namespace TCPChat_Client
                 Console.WriteLine("/config \n");
                 Console.WriteLine("/quit \n");
 #if (DEVMODE)
-                inputConnectInfo();
+                InputConnectInfo();
 #else
                 string command = Console.ReadLine();
                 switch (command)
                 {
                     case "/connect":
-                        inputConnectInfo();
+                        InputConnectInfo();
                         break;
                     case "/config":
-                        configHelp();
+                        ConfigHelp();
                         break;
                     case "/quit":
                         quitNow = true;
@@ -43,7 +43,7 @@ namespace TCPChat_Client
             }
         }
         // Prepare connection information.
-        public static void inputConnectInfo()
+        public static void InputConnectInfo()
         {
 #if (DEVMODE)
 
@@ -62,7 +62,7 @@ namespace TCPChat_Client
 #endif
 
         }
-        public static void configHelp()
+        public static void ConfigHelp()
         {
             Console.Clear();
 

@@ -24,7 +24,7 @@ namespace TCPChat_Server
 
             return finalBytes;
         }
-        public static void RepeatToAllClients(List<MessageFormat> list)
+        public static void RepeatToAllClients<T>(List<T> list)
         {
             string json = Serialization.Serialize(list);
 
@@ -88,8 +88,7 @@ namespace TCPChat_Server
             string messageFormatted = MessageSerialization.ReturnEndOfStream(message);
             List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-            OutputMessage.ServerRecievedMessage(messageList);
-
+            ConsoleOutput.RecievedMessageFormat(messageList);
 
             // Encrypts the message and sends it to all clients.
             RepeatToAllClients(messageList);
@@ -118,17 +117,21 @@ namespace TCPChat_Server
                 return;
             }
 
+            string message = String.Format("{0} has connected.", list[0].Username);
+            ServerMessage(instance, ConsoleColor.Yellow, message);
+
+
             instance.clientVerified = true;
 
             List<WelcomeMessageFormat> welcomeMessage = new List<WelcomeMessageFormat>();
 
             welcomeMessage.Add(new WelcomeMessageFormat
             {
-                messageType = MessageTypes.WELCOME,
-                connectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
-                serverName = ServerConfigFormat.serverChosenName,
-                keyExponent = Encryption.RSAExponent,
-                keyModulus = Encryption.RSAModulus,
+                MessageType = MessageTypes.WELCOME,
+                ConnectMessage = ServerConfigFormat.serverChosenWelcomeMessage,
+                ServerName = ServerConfigFormat.serverChosenName,
+                RSAExponent = Encryption.RSAExponent,
+                RSAModulus = Encryption.RSAModulus,
                 ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
             });
 
@@ -170,14 +173,14 @@ namespace TCPChat_Server
 
             serverMessage.Add(new ServerMessageFormat
             {
-                messageType = MessageTypes.SERVER,
-                message = message,
-                color = color,
+                MessageType = MessageTypes.SERVER,
+                Message = message,
+                Color = color,
                 RSAExponent = Encryption.RSAExponent,
                 RSAModulus = Encryption.RSAModulus,
             });
-
-            Serialize(serverMessage, instance, true);
+            ConsoleOutput.RecievedServerMessageFormat(serverMessage);
+            RepeatToAllClients(serverMessage);
         }
         public static int FindClientKeysIndex(TcpClient client)
         {

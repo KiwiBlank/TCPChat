@@ -22,15 +22,16 @@ namespace CommonDefines
     }
     public class ServerMessageFormat
     {
-        public MessageTypes messageType { get; set; }
+        public MessageTypes MessageType { get; set; }
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
-        public ConsoleColor color { get; set; }
-        public string message { get; set; }
+        public ConsoleColor Color { get; set; }
+        public string Message { get; set; }
     }
     public class ConnectionMessageFormat
     {
-        public MessageTypes messageType { get; set; }
+        public MessageTypes MessageType { get; set; }
+        public string Username { get; set; }
         // Client's public key data.
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
@@ -40,20 +41,20 @@ namespace CommonDefines
     [Serializable]
     public class WelcomeMessageFormat
     {
-        public MessageTypes messageType { get; set; }
-        public string connectMessage { get; set; }
-        public string serverName { get; set; }
+        public MessageTypes MessageType { get; set; }
+        public string ConnectMessage { get; set; }
+        public string ServerName { get; set; }
         // The server's public key, that all users need to encrypt their message with.
-        public byte[] keyExponent { get; set; }
-        public byte[] keyModulus { get; set; }
+        public byte[] RSAExponent { get; set; }
+        public byte[] RSAModulus { get; set; }
         public string ServerVersion { get; set; }
     }
     [Serializable]
     // Inherits the userconfigformat as of now.
     public class MessageFormat : UserConfigFormat
     {
-        public MessageTypes messageType { get; set; }
-        public string message { get; set; }
+        public MessageTypes MessageType { get; set; }
+        public string Message { get; set; }
     }
     [Serializable]
     // The format that the user config should follow.
@@ -70,7 +71,7 @@ namespace CommonDefines
         // Variables to store the values that the config reader gets.
         public static string serverChosenName;
         public static string serverChosenWelcomeMessage;
-        public string serverName { get; set; }
-        public string serverWelcomeMessage { get; set; }
+        public string ServerName { get; set; }
+        public string ServerWelcomeMessage { get; set; }
     }
 }

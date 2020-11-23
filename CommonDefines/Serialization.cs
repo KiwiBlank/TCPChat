@@ -10,33 +10,25 @@ namespace CommonDefines
     {
         public static List<ServerMessageFormat> DeserializeServerMessageFormat(string text)
         {
-            List<ServerMessageFormat> messageList = new List<ServerMessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<ServerMessageFormat>>(text);
+            List<ServerMessageFormat> messageList = JsonSerializer.Deserialize<List<ServerMessageFormat>>(text);
 
             return messageList;
         }
         public static List<ConnectionMessageFormat> DeserializeConnectionMessageFormat(string text)
         {
-            List<ConnectionMessageFormat> messageList = new List<ConnectionMessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<ConnectionMessageFormat>>(text);
+            List<ConnectionMessageFormat> messageList = JsonSerializer.Deserialize<List<ConnectionMessageFormat>>(text);
 
             return messageList;
         }
         public static List<MessageFormat> DeserializeMessageFormat(string text)
         {
-            List<MessageFormat> messageList = new List<MessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
+            List<MessageFormat> messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
 
             return messageList;
         }
         public static List<WelcomeMessageFormat> DeserializeWelcomeMessageFormat(string text)
         {
-            List<WelcomeMessageFormat> messageList = new List<WelcomeMessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);
+            List<WelcomeMessageFormat> messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);
 
             return messageList;
         }
