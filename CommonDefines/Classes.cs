@@ -16,6 +16,7 @@ namespace CommonDefines
     public class ClientList
     {
         public TcpClient TCPClient { get; set; }
+        public string Username { get; set; }
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
 

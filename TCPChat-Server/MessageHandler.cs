@@ -43,6 +43,10 @@ namespace TCPChat_Server
                 {
                     ServerHandler.activeClients.RemoveAt(i);
                 }
+                catch (InvalidOperationException)
+                {
+                    ServerHandler.activeClients.RemoveAt(i);
+                }
 
             }
         }
@@ -104,11 +108,12 @@ namespace TCPChat_Server
             ServerHandler.activeClients.Add(new ClientList
             {
                 TCPClient = instance.client,
+                Username = list[0].Username,
                 RSAExponent = list[0].RSAExponent,
                 RSAModulus = list[0].RSAModulus
             });
 
-            // Check if server and client versions are the same before continuing.
+          // Check if server and client versions are the same before continuing.
             if (!VersionCheck(instance, list[0].ClientVersion))
             {
                 // Remove the item just added to active clients.
@@ -118,9 +123,9 @@ namespace TCPChat_Server
             }
 
             string message = String.Format("{0} has connected.", list[0].Username);
-            ServerMessage(instance, ConsoleColor.Yellow, message);
+            ServerMessage(ConsoleColor.Yellow, message);
 
-
+            
             instance.clientVerified = true;
 
             List<WelcomeMessageFormat> welcomeMessage = new List<WelcomeMessageFormat>();
@@ -161,13 +166,34 @@ namespace TCPChat_Server
                     clientVersion,
                     Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-                ServerMessage(instance, ConsoleColor.Yellow, message);
+
+                List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
+
+                serverMessage.Add(new ServerMessageFormat
+                {
+                    MessageType = MessageTypes.SERVER,
+                    Message = message,
+                    Color = ConsoleColor.Yellow,
+                    RSAExponent = Encryption.RSAExponent,
+                    RSAModulus = Encryption.RSAModulus,
+                });
+
+                string json = Serialization.Serialize(serverMessage);
+
+                byte[] data = Serialization.AddEndCharToMessage(json);
+
+                int index = MessageHandler.FindClientKeysIndex(instance.client);
+
+                byte[] encrypted = EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+
+                StreamHandler.WriteToStream(instance.stream, encrypted);
+
                 instance.client.Close();
                 return false;
             }
             return true;
         }
-        public static void ServerMessage(ClientInstance instance, ConsoleColor color, string message)
+        public static void ServerMessage(ConsoleColor color, string message)
         {
             List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
 

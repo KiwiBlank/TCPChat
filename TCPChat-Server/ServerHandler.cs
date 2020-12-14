@@ -48,6 +48,7 @@ namespace TCPChat_Server
             }
             catch (Exception e)
             {
+
                 Console.WriteLine("Exception: {0}", e);
                 server.Stop();
             }
@@ -77,9 +78,32 @@ namespace TCPChat_Server
                 // Will check if the client is actually sending and recieiving messages.
                 ClientHeartbeat(instance);
             }
+            // ObjectDisposedException does not contain an error code, 
+            // therefore it can not return a custom message for the moment.
+            catch (ObjectDisposedException e)
+            {
+                return;
+            }
+            // Any other exception should have an error code.
+            // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes
             catch (Exception e)
             {
-                Console.WriteLine("Exception: {0}", e);
+
+                int excID = ExceptionData.ExceptionIdentification(e);
+
+
+                switch (excID)
+                {
+                    case 10054:
+                        int index = MessageHandler.FindClientKeysIndex(client);
+                        string message = String.Format("{0} disconnected.", activeClients[index].Username);
+                        MessageHandler.ServerMessage(ConsoleColor.Yellow, message);
+                        break;
+                    default:
+                        Console.WriteLine("Exception: {0}", e);
+                        break;
+                }
+
                 client.Close();
             }
         }
