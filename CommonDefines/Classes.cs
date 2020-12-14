@@ -39,7 +39,6 @@ namespace CommonDefines
         public string ClientVersion { get; set; }
 
     }
-    [Serializable]
     public class WelcomeMessageFormat
     {
         public MessageTypes MessageType { get; set; }
@@ -50,14 +49,12 @@ namespace CommonDefines
         public byte[] RSAModulus { get; set; }
         public string ServerVersion { get; set; }
     }
-    [Serializable]
     // Inherits the userconfigformat as of now.
     public class MessageFormat : UserConfigFormat
     {
         public MessageTypes MessageType { get; set; }
         public string Message { get; set; }
     }
-    [Serializable]
     // The format that the user config should follow.
     public class UserConfigFormat
     {
