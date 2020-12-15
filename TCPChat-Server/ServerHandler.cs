@@ -80,7 +80,7 @@ namespace TCPChat_Server
             }
             // ObjectDisposedException does not contain an error code, 
             // therefore it can not return a custom message for the moment.
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
                 return;
             }
