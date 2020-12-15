@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace TCPChat_Server
 {
@@ -77,7 +78,7 @@ namespace TCPChat_Server
                 // Is client verified, meaning client has established initial connection and communication.
                 if (instance.clientVerified)
                 {
-                    VerifiedRecieve(bytesResized);
+                    VerifiedRecieve(instance, bytesResized);
                 }
                 else
                 {
@@ -85,17 +86,31 @@ namespace TCPChat_Server
                 }
             }
         }
-        public static void VerifiedRecieve(byte[] bytes)
+        public static void VerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
             string message = Encryption.DecryptMessageData(bytes);
 
             string messageFormatted = MessageSerialization.ReturnEndOfStream(message);
-            List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-            ConsoleOutput.RecievedMessageFormat(messageList);
+            List<MessageFormat> messageList;
 
-            // Encrypts the message and sends it to all clients.
-            RepeatToAllClients(messageList);
+            // Error when deserializing message.
+            // Could mean corrupt or icorrect data has been transmitted.
+            try
+            {
+                messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+                ConsoleOutput.RecievedMessageFormat(messageList);
+
+                // Encrypts the message and sends it to all clients.
+                RepeatToAllClients(messageList);
+            }
+            catch (JsonException)
+            {
+                int index = MessageHandler.FindClientKeysIndex(instance.client);
+                string serverMessage = String.Format("{0} Was kicked due to an invalid message.", ServerHandler.activeClients[index].Username);
+                MessageHandler.ServerMessage(ConsoleColor.Yellow, serverMessage);
+                instance.client.Close();
+            }
         }
         public static void NotVerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
@@ -114,13 +129,13 @@ namespace TCPChat_Server
             });
 
           // Check if server and client versions are the same before continuing.
-            if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
+            /*if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
             {
                 // Remove the item just added to active clients.
                 // The reason it is added before is to have a list to index when sending server message to.
                 ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
                 return;
-            }
+            }*/
 
             string message = String.Format("{0} has connected.", list[0].Username);
             ServerMessage(ConsoleColor.Yellow, message);
