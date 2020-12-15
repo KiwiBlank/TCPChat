@@ -128,19 +128,19 @@ namespace TCPChat_Server
                 RSAModulus = list[0].RSAModulus
             });
 
-          // Check if server and client versions are the same before continuing.
-            /*if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
+            // Check if server and client versions are the same before continuing.
+            if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
             {
                 // Remove the item just added to active clients.
                 // The reason it is added before is to have a list to index when sending server message to.
                 ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
                 return;
-            }*/
+            }
 
             string message = String.Format("{0} has connected.", list[0].Username);
             ServerMessage(ConsoleColor.Yellow, message);
 
-            
+
             instance.clientVerified = true;
 
             List<WelcomeMessageFormat> welcomeMessage = new List<WelcomeMessageFormat>();

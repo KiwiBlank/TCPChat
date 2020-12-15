@@ -69,9 +69,6 @@ namespace TCPChat_Server
                 instance.client = client;
                 instance.stream = client.GetStream();
 
-                Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
-
-
                 // Loop to receive all the data sent by the client.
                 MessageHandler.RecieveMessage(instance);
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommonDefines
 {
@@ -9,7 +7,7 @@ namespace CommonDefines
         public static int ExceptionIdentification(Exception exception)
         {
             string baseEsception = exception.GetBaseException().ToString();
-            string strID = baseEsception.Split('(', ')') [1];
+            string strID = baseEsception.Split('(', ')')[1];
 
             int id;
             bool parse = int.TryParse(strID, out id);

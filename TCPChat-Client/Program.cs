@@ -1,4 +1,4 @@
-﻿#define DEVMODE
+﻿//#define DEVMODE
 
 using CommonDefines;
 using System;
@@ -11,7 +11,7 @@ namespace TCPChat_Client
             ConfigHandler.WriteDefaultConfig();
             Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
-
+            AddCommands.Add();
             bool quitNow = false;
             while (!quitNow)
             {

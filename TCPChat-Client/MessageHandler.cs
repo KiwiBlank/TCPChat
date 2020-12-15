@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -56,18 +55,30 @@ namespace TCPChat_Client
                 // Disallow sending empty information to stream.
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
-                    List<MessageFormat> newMessage = new List<MessageFormat>();
-
-                    // See the messageformat class in VariableDefines.
-                    // The formatting for a client's message
-                    newMessage.Add(new MessageFormat
+                    // Check if first character is / which means a command is being input.
+                    if (messageString.Substring(0, 1) == "/")
                     {
-                        MessageType = MessageTypes.MESSAGE,
-                        Message = messageString,
-                        Username = UserConfigFormat.userChosenName,
-                        UserNameColor = UserConfigFormat.userChosenColor
-                    });
-                    PrepareMessage(newMessage, client, stream, true, true);
+
+                        CommandHandler.GetCommandType(messageString);
+                        InputMessage(client, stream);
+
+                    }
+                    else
+                    // Regular message.
+                    {
+                        List<MessageFormat> newMessage = new List<MessageFormat>();
+
+                        // See the messageformat class in VariableDefines.
+                        // The formatting for a client's message
+                        newMessage.Add(new MessageFormat
+                        {
+                            MessageType = MessageTypes.MESSAGE,
+                            Message = messageString,
+                            Username = UserConfigFormat.userChosenName,
+                            UserNameColor = UserConfigFormat.userChosenColor
+                        });
+                        PrepareMessage(newMessage, client, stream, true, true);
+                    }
                 }
                 else
                 {
