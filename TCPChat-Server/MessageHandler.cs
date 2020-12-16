@@ -87,16 +87,28 @@ namespace TCPChat_Server
         }
         public static void VerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
-            string message = Encryption.DecryptMessageData(bytes);
+            // Random CryptographicException that i am not able to replicate
+            // TODO Investigate reason for exception.
+            string message = "";
+            try
+            {
+                message = Encryption.DecryptMessageData(bytes);
+
+            }
+            catch (CryptographicException)
+            {
+
+                int index = MessageHandler.FindClientKeysIndex(instance.client);
+                string serverMessage = String.Format("{0} Was kicked due to a cryptography error.", ServerHandler.activeClients[index].Username);
+                MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                instance.client.Close();
+            }
 
             string messageFormatted = Common.ReturnEndOfStream(message);
 
-            List<MessageFormat> messageList;
-
-
-
             byte[] messageBytes = Encoding.ASCII.GetBytes(messageFormatted);
 
+            List<MessageFormat> messageList;
 
             switch (Common.ReturnMessageType(messageBytes))
             {
