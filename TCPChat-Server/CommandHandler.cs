@@ -36,7 +36,7 @@ namespace TCPChat_Server
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 
-            int index = MessageHandler.FindClientKeysIndex(instance.client);
+            int index = ServerMessage.FindClientKeysIndex(instance.client);
 
             byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
 

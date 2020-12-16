@@ -98,9 +98,9 @@ namespace TCPChat_Server
             catch (CryptographicException)
             {
 
-                int index = MessageHandler.FindClientKeysIndex(instance.client);
+                int index = ServerMessage.FindClientKeysIndex(instance.client);
                 string serverMessage = String.Format("{0} Was kicked due to a cryptography error.", ServerHandler.activeClients[index].Username);
-                MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
                 instance.client.Close();
             }
 
@@ -126,9 +126,9 @@ namespace TCPChat_Server
                     }
                     catch (JsonException)
                     {
-                        int index = MessageHandler.FindClientKeysIndex(instance.client);
+                        int index = ServerMessage.FindClientKeysIndex(instance.client);
                         string serverMessage = String.Format("{0} Was kicked due to an invalid message.", ServerHandler.activeClients[index].Username);
-                        MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
                         instance.client.Close();
                     }
                     break;
@@ -164,7 +164,7 @@ namespace TCPChat_Server
             }
 
             string message = String.Format("{0} has connected.", list[0].Username);
-            ServerGlobalMessage(ConsoleColor.Yellow, message);
+            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
 
 
             instance.clientVerified = true;
@@ -192,60 +192,11 @@ namespace TCPChat_Server
 
             if (encrypt)
             {
-                int index = FindClientKeysIndex(instance.client);
+                int index = ServerMessage.FindClientKeysIndex(instance.client);
                 data = EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
             }
 
             StreamHandler.WriteToStream(instance.stream, data);
-        }
-        public static void ServerGlobalMessage(ConsoleColor color, string message)
-        {
-            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
-
-            serverMessage.Add(new ServerMessageFormat
-            {
-                MessageType = MessageTypes.SERVER,
-                Message = message,
-                Color = color,
-                RSAExponent = Encryption.RSAExponent,
-                RSAModulus = Encryption.RSAModulus,
-            });
-            ConsoleOutput.RecievedServerMessageFormat(serverMessage);
-            RepeatToAllClients(serverMessage);
-        }
-        public static void ServerClientMessage(ClientInstance instance, ConsoleColor color, string message)
-        {
-            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
-
-            serverMessage.Add(new ServerMessageFormat
-            {
-                MessageType = MessageTypes.SERVER,
-                Message = message,
-                Color = color,
-                RSAExponent = Encryption.RSAExponent,
-                RSAModulus = Encryption.RSAModulus,
-            });
-
-            string json = Serialization.Serialize(serverMessage);
-
-            byte[] data = Serialization.AddEndCharToMessage(json);
-
-            int index = MessageHandler.FindClientKeysIndex(instance.client);
-
-            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
-
-            StreamHandler.WriteToStream(instance.stream, encrypted);
-        }
-        public static int FindClientKeysIndex(TcpClient client)
-        {
-            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
-            {
-                if (ServerHandler.activeClients[i].TCPClient == client)
-                {
-                    return i;
-                }
-            }
-            return -1;
         }
     }
 }

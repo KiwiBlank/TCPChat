@@ -92,9 +92,9 @@ namespace TCPChat_Server
                 switch (excID)
                 {
                     case 10054:
-                        int index = MessageHandler.FindClientKeysIndex(client);
+                        int index = ServerMessage.FindClientKeysIndex(client);
                         string message = String.Format("{0} disconnected.", activeClients[index].Username);
-                        MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, message);
+                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                         break;
                     default:
                         Console.WriteLine("Exception: {0}", e);
