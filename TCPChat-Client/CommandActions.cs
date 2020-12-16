@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CommonDefines;
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace TCPChat_Client
 {
@@ -22,6 +25,11 @@ namespace TCPChat_Client
                 Option = "exit",
                 Action = ExitAction.Execute,
             });
+            CommandHandler.commandList.Add(new CommandFormat
+            {
+                Option = "list",
+                Action = ClientListAction.Execute,
+            });
         }
     }
     class HelpAction
@@ -40,6 +48,22 @@ namespace TCPChat_Client
         public static void Execute()
         {
             Environment.Exit(0);
+        }
+    }
+    class ClientListAction
+    {
+        public static void Execute()
+        {
+            List<DataRequestFormat> message = new List<DataRequestFormat>();
+
+            // See the messageformat class in VariableDefines.
+            // The formatting for a client's message
+            message.Add(new DataRequestFormat
+            {
+                MessageType = MessageTypes.DATAREQUEST,
+                DataType = CommandDataTypes.CLIENTLIST,
+            });
+            MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
     }
 

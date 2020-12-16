@@ -10,7 +10,13 @@ namespace CommonDefines
         CONNECTION = 1,
         WELCOME = 2,
         SERVER = 3,
-        ENCRYPTED = 4
+        ENCRYPTED = 4,
+        DATAREQUEST = 5,
+        DATAREPLY = 6,
+    }
+    public enum CommandDataTypes : int
+    {
+        CLIENTLIST = 0
     }
     // Keeps a list of clients and their RSA public key.
     public class ClientList
@@ -37,7 +43,6 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public string ClientVersion { get; set; }
-
     }
     public class WelcomeMessageFormat
     {
@@ -48,6 +53,17 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public string ServerVersion { get; set; }
+    }
+    public class DataRequestFormat
+    {
+        public MessageTypes MessageType { get; set; }
+        public CommandDataTypes DataType { get; set; }
+    }
+    public class DataReplyFormat
+    {
+        public MessageTypes MessageType { get; set; }
+        public CommandDataTypes DataType { get; set; }
+        public string Data { get; set; }
     }
     // Inherits the userconfigformat as of now.
     public class MessageFormat : UserConfigFormat

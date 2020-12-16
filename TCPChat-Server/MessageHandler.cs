@@ -74,7 +74,6 @@ namespace TCPChat_Server
                 Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
 
 
-
                 // Is client verified, meaning client has established initial connection and communication.
                 if (instance.clientVerified)
                 {
@@ -90,31 +89,46 @@ namespace TCPChat_Server
         {
             string message = Encryption.DecryptMessageData(bytes);
 
-            string messageFormatted = MessageSerialization.ReturnEndOfStream(message);
+            string messageFormatted = Common.ReturnEndOfStream(message);
 
             List<MessageFormat> messageList;
 
-            // Error when deserializing message.
-            // Could mean corrupt or icorrect data has been transmitted.
-            try
-            {
-                messageList = Serialization.DeserializeMessageFormat(messageFormatted);
-                ConsoleOutput.RecievedMessageFormat(messageList);
 
-                // Encrypts the message and sends it to all clients.
-                RepeatToAllClients(messageList);
-            }
-            catch (JsonException)
+
+            byte[] messageBytes = Encoding.ASCII.GetBytes(messageFormatted);
+
+
+            switch (Common.ReturnMessageType(messageBytes))
             {
-                int index = MessageHandler.FindClientKeysIndex(instance.client);
-                string serverMessage = String.Format("{0} Was kicked due to an invalid message.", ServerHandler.activeClients[index].Username);
-                MessageHandler.ServerMessage(ConsoleColor.Yellow, serverMessage);
-                instance.client.Close();
+                case MessageTypes.MESSAGE:
+                    // Error when deserializing message.
+                    // Could mean corrupt or icorrect data has been transmitted.
+
+                    try
+                    {
+                        messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+                        ConsoleOutput.RecievedMessageFormat(messageList);
+
+                        // Encrypts the message and sends it to all clients.
+                        RepeatToAllClients(messageList);
+                    }
+                    catch (JsonException)
+                    {
+                        int index = MessageHandler.FindClientKeysIndex(instance.client);
+                        string serverMessage = String.Format("{0} Was kicked due to an invalid message.", ServerHandler.activeClients[index].Username);
+                        MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                        instance.client.Close();
+                    }
+                    break;
+                case MessageTypes.DATAREQUEST:
+                    List<DataRequestFormat> dataList = Serialization.DeserializeDataRequestFormat(messageFormatted);
+                    CommandHandler.RecievedDataRequest(instance, dataList);
+                    break;
             }
         }
         public static void NotVerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
-            string messageFormatted = MessageSerialization.ReturnEndOfStream(Encoding.ASCII.GetString(bytes));
+            string messageFormatted = Common.ReturnEndOfStream(Encoding.ASCII.GetString(bytes));
 
             List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
 
@@ -138,7 +152,7 @@ namespace TCPChat_Server
             }
 
             string message = String.Format("{0} has connected.", list[0].Username);
-            ServerMessage(ConsoleColor.Yellow, message);
+            ServerGlobalMessage(ConsoleColor.Yellow, message);
 
 
             instance.clientVerified = true;
@@ -172,7 +186,7 @@ namespace TCPChat_Server
 
             StreamHandler.WriteToStream(instance.stream, data);
         }
-        public static void ServerMessage(ConsoleColor color, string message)
+        public static void ServerGlobalMessage(ConsoleColor color, string message)
         {
             List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
 
@@ -186,6 +200,29 @@ namespace TCPChat_Server
             });
             ConsoleOutput.RecievedServerMessageFormat(serverMessage);
             RepeatToAllClients(serverMessage);
+        }
+        public static void ServerClientMessage(ClientInstance instance, ConsoleColor color, string message)
+        {
+            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
+
+            serverMessage.Add(new ServerMessageFormat
+            {
+                MessageType = MessageTypes.SERVER,
+                Message = message,
+                Color = color,
+                RSAExponent = Encryption.RSAExponent,
+                RSAModulus = Encryption.RSAModulus,
+            });
+
+            string json = Serialization.Serialize(serverMessage);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+
+            int index = MessageHandler.FindClientKeysIndex(instance.client);
+
+            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+
+            StreamHandler.WriteToStream(instance.stream, encrypted);
         }
         public static int FindClientKeysIndex(TcpClient client)
         {

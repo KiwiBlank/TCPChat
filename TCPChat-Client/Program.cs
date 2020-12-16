@@ -2,17 +2,23 @@
 
 using CommonDefines;
 using System;
+using System.Net.Sockets;
+
 namespace TCPChat_Client
 {
     class Program
     {
+        public static TcpClient staticClient;
+        public static NetworkStream staticStream;
         static void Main(string[] args)
         {
             ConfigHandler.WriteDefaultConfig();
             Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
             AddCommands.Add();
-            bool quitNow = false;
+
+
+        bool quitNow = false;
             while (!quitNow)
             {
                 Console.Title = "TCPChat - Client";

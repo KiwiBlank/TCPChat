@@ -94,7 +94,7 @@ namespace TCPChat_Server
                     case 10054:
                         int index = MessageHandler.FindClientKeysIndex(client);
                         string message = String.Format("{0} disconnected.", activeClients[index].Username);
-                        MessageHandler.ServerMessage(ConsoleColor.Yellow, message);
+                        MessageHandler.ServerGlobalMessage(ConsoleColor.Yellow, message);
                         break;
                     default:
                         Console.WriteLine("Exception: {0}", e);

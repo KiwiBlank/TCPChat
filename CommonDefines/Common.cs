@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Text;
 
 namespace CommonDefines
 {
 
-    public class MessageSerialization
+    public class Common
     {
 
         public static string ReturnEndOfStream(string text)
@@ -39,7 +40,26 @@ namespace CommonDefines
             }
             return 0;
         }
+        public static MessageTypes ReturnMessageType(byte[] data)
+        {
+            string byteASCII = Encoding.ASCII.GetString(new byte[] { data[16] });
 
+            int outNum;
+            // First step. Try parse to find out if character is an integer or not.
+            bool parse = int.TryParse(byteASCII, out outNum);
+            if (!parse)
+            {
+                return MessageTypes.ENCRYPTED;
+            }
+
+            // Second step. Check if the parsed integer is actually part of enum.
+            if (!Enum.IsDefined(typeof(MessageTypes), outNum))
+            {
+                return MessageTypes.ENCRYPTED;
+            }
+            // TODO Find better way to define byte locations.
+            // Byte number 16 is the position of the byte that indicates messagetype in a json formatted message.
+            return (MessageTypes)outNum;
+        }
     }
-
 }

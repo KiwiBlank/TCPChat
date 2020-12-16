@@ -15,6 +15,9 @@ namespace TCPChat_Client
                 TcpClient client = new TcpClient(serverIP, ServerPort);
                 NetworkStream stream = client.GetStream();
 
+                Program.staticClient = client;
+                Program.staticStream = stream;
+
                 Console.Title = String.Format("TCPChat - Connected to {0}", serverIP);
 
                 // Send connection message

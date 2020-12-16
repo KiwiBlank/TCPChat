@@ -16,27 +16,7 @@ namespace TCPChat_Server
                     clientVersion,
                     Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-
-                List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
-
-                serverMessage.Add(new ServerMessageFormat
-                {
-                    MessageType = MessageTypes.SERVER,
-                    Message = message,
-                    Color = ConsoleColor.Yellow,
-                    RSAExponent = Encryption.RSAExponent,
-                    RSAModulus = Encryption.RSAModulus,
-                });
-
-                string json = Serialization.Serialize(serverMessage);
-
-                byte[] data = Serialization.AddEndCharToMessage(json);
-
-                int index = MessageHandler.FindClientKeysIndex(instance.client);
-
-                byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
-
-                StreamHandler.WriteToStream(instance.stream, encrypted);
+                MessageHandler.ServerClientMessage(instance, ConsoleColor.Yellow, message);
 
                 instance.client.Close();
                 return false;

@@ -8,6 +8,18 @@ namespace CommonDefines
 {
     public class Serialization
     {
+        public static List<DataReplyFormat> DeserializeDataReplyFormat(string text)
+        {
+            List<DataReplyFormat> messageList = JsonSerializer.Deserialize<List<DataReplyFormat>>(text);
+
+            return messageList;
+        }
+        public static List<DataRequestFormat> DeserializeDataRequestFormat(string text)
+        {
+            List<DataRequestFormat> messageList = JsonSerializer.Deserialize<List<DataRequestFormat>>(text);
+
+            return messageList;
+        }
         public static List<ServerMessageFormat> DeserializeServerMessageFormat(string text)
         {
             List<ServerMessageFormat> messageList = JsonSerializer.Deserialize<List<ServerMessageFormat>>(text);

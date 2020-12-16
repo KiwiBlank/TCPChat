@@ -20,7 +20,6 @@ namespace TCPChat_Client
             if (Encrypt)
             {
                 EncryptSendMessage(data, client, stream);
-
             }
             // Does not encrypt, just sends.
             else
@@ -98,7 +97,7 @@ namespace TCPChat_Client
                 // Check message type
                 // Even if message type is encrypted
                 // The decrypted message can be an different type.
-                switch (ReturnMessageType(data))
+                switch (Common.ReturnMessageType(data))
                 {
                     // Welcome can not be encrypted as that is when keys are sent.
                     case MessageTypes.WELCOME:
@@ -113,7 +112,7 @@ namespace TCPChat_Client
         public static void ClientRecievedWelcomeMessage(byte[] data, Int32 bytes)
         {
             string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-            string text = MessageSerialization.ReturnEndOfStream(responseData);
+            string text = Common.ReturnEndOfStream(responseData);
 
             List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
 
@@ -123,45 +122,27 @@ namespace TCPChat_Client
         {
             string message = Encryption.DecryptMessageData(data);
 
-            string messageFormatted = MessageSerialization.ReturnEndOfStream(message);
+
+            string messageFormatted = Common.ReturnEndOfStream(message);
 
             // I have to return it to bytes for some reason, otherwise i get an incorrect character on byte pos 16.
             byte[] messageBytes = Encoding.ASCII.GetBytes(messageFormatted);
 
-
-            switch (ReturnMessageType(messageBytes))
+            switch (Common.ReturnMessageType(messageBytes))
             {
                 case MessageTypes.MESSAGE:
                     List<MessageFormat> messageFormatList = Serialization.DeserializeMessageFormat(messageFormatted);
                     ConsoleOutput.RecievedMessageFormat(messageFormatList);
                     break;
                 case MessageTypes.SERVER:
-                    List<ServerMessageFormat> messageList = Serialization.DeserializeServerMessageFormat(messageFormatted);
-                    ConsoleOutput.RecievedServerMessageFormat(messageList);
+                    List<ServerMessageFormat> serverFormatList = Serialization.DeserializeServerMessageFormat(messageFormatted);
+                    ConsoleOutput.RecievedServerMessageFormat(serverFormatList);
+                    break;
+                case MessageTypes.DATAREPLY:
+                    List<DataReplyFormat> dataFormatList = Serialization.DeserializeDataReplyFormat(messageFormatted);
+                    CommandHandler.RecievedDataReply(dataFormatList);
                     break;
             }
-        }
-        public static MessageTypes ReturnMessageType(byte[] data)
-        {
-            string byteASCII = Encoding.ASCII.GetString(new byte[] { data[16] });
-
-            int outNum;
-            // First step. Try parse to find out if character is an integer or not.
-            bool parse = int.TryParse(byteASCII, out outNum);
-            if (!parse)
-            {
-                return MessageTypes.ENCRYPTED;
-            }
-
-            // Second step. Check if the parsed integer is actually part of enum.
-            if (!Enum.IsDefined(typeof(MessageTypes), outNum))
-            {
-                return MessageTypes.ENCRYPTED;
-            }
-            // TODO Find better way to define byte locations.
-            // Byte number 16 is the position of the byte that indicates messagetype in a json formatted message.
-
-            return (MessageTypes)outNum;
         }
     }
 }
