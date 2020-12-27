@@ -14,8 +14,11 @@ namespace TCPChat_Server
             {
                 case CommandDataTypes.CLIENTLIST:
                     string clients = ClientListString();
-
                     ReplyToDataRequest(instance, clients, CommandDataTypes.CLIENTLIST);
+                    break;
+                case CommandDataTypes.PING:
+                    string replyTime = PingReply(list[0].Parameters);
+                    ReplyToDataRequest(instance, replyTime, CommandDataTypes.PING);
                     break;
                 default:
                     break;
@@ -54,7 +57,15 @@ namespace TCPChat_Server
             string finalList = String.Join(",", usernames);
 
             return finalList;
+        }
+        public static string PingReply(string pingTime)
+        {
+            long pingParse = long.Parse(pingTime);
+            long pongTime = DateTimeOffset.UnixEpoch.ToUnixTimeMilliseconds();
 
+            long timeDifference = pongTime - pingParse;
+
+            return timeDifference.ToString();
         }
     }
 }

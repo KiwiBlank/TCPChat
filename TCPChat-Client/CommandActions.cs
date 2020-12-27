@@ -30,6 +30,11 @@ namespace TCPChat_Client
                 Option = "list",
                 Action = ClientListAction.Execute,
             });
+            CommandHandler.commandList.Add(new CommandFormat
+            {
+                Option = "ping",
+                Action = PingAction.Execute,
+            });
         }
     }
     class HelpAction
@@ -62,6 +67,7 @@ namespace TCPChat_Client
             {
                 MessageType = MessageTypes.DATAREQUEST,
                 DataType = CommandDataTypes.CLIENTLIST,
+                Parameters = null
             });
             MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
@@ -78,6 +84,21 @@ namespace TCPChat_Client
                 return;
             }
             Console.WriteLine("{0}", CommandHandler.CommandArgument);
+        }
+    }
+    class PingAction
+    {
+        public static void Execute()
+        {
+            List<DataRequestFormat> message = new List<DataRequestFormat>();
+
+            message.Add(new DataRequestFormat
+            {
+                MessageType = MessageTypes.DATAREQUEST,
+                DataType = CommandDataTypes.PING,
+                Parameters = DateTimeOffset.UnixEpoch.ToUnixTimeMilliseconds().ToString()
+            });
+            MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
     }
 }

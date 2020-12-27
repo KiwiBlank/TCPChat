@@ -16,7 +16,8 @@ namespace CommonDefines
     }
     public enum CommandDataTypes : int
     {
-        CLIENTLIST = 0
+        CLIENTLIST = 0,
+        PING = 1
     }
     // Keeps a list of clients and their RSA public key.
     public class ClientList
@@ -58,6 +59,7 @@ namespace CommonDefines
     {
         public MessageTypes MessageType { get; set; }
         public CommandDataTypes DataType { get; set; }
+        public string Parameters { get; set; }
     }
     public class DataReplyFormat
     {

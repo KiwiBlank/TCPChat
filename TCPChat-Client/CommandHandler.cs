@@ -44,6 +44,9 @@ namespace TCPChat_Client
                 case CommandDataTypes.CLIENTLIST:
                     RecievedClientList(list[0].Data);
                     break;
+                case CommandDataTypes.PING:
+                    RecievedPingReply(list[0].Data);
+                    break;
                 default:
                     break;
             }
@@ -53,6 +56,10 @@ namespace TCPChat_Client
             data = data.Replace(",", Environment.NewLine);
             Console.WriteLine("These users are currently online:");
             Console.WriteLine(data);
+        }
+        public static void RecievedPingReply(string data)
+        {
+            Console.WriteLine("Your latency to the server is: {0} ms", data);
         }
     }
 }
