@@ -45,9 +45,16 @@ namespace CommonDefines
             return messageList;
         }
 
-        public static string Serialize<T>(List<T> list)
+        public static string Serialize<T>(List<T> list, bool indent)
         {
-            string json = JsonSerializer.Serialize(list);
+            string json;
+            if (indent)
+            {
+                json = JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true });
+            } else
+            {
+                json = JsonSerializer.Serialize(list);
+            }
 
             return json;
         }

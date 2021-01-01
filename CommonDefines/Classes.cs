@@ -87,7 +87,11 @@ namespace CommonDefines
         // Variables to store the values that the config reader gets.
         public static string serverChosenName;
         public static string serverChosenWelcomeMessage;
+        public static int serverChosenClientTime;
+
         public string ServerName { get; set; }
         public string ServerWelcomeMessage { get; set; }
+        // Milliseconds
+        public int ClientTimeBetweenMessages { get; set; }
     }
 }

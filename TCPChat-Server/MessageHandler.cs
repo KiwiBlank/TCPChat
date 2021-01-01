@@ -27,7 +27,7 @@ namespace TCPChat_Server
         }
         public static void RepeatToAllClients<T>(List<T> list)
         {
-            string json = Serialization.Serialize(list);
+            string json = Serialization.Serialize(list, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 
@@ -63,7 +63,7 @@ namespace TCPChat_Server
             while ((instance.stream.Read(bytes, 0, bytes.Length)) > 0)
             {
                 // Checks if the client has sent messages too fast.
-                if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - lastMessage >= 500)
+                if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - lastMessage >= ServerConfigFormat.serverChosenClientTime)
                 {
                     lastMessage = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -193,7 +193,7 @@ namespace TCPChat_Server
         }
         public static void Serialize<T>(List<T> message, ClientInstance instance, bool encrypt)
         {
-            string json = Serialization.Serialize(message);
+            string json = Serialization.Serialize(message, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 

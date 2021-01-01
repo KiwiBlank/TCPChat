@@ -12,7 +12,7 @@ namespace TCPChat_Client
         /// Serialize the messageFormat with json to transmit.
         public static void PrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
         {
-            string json = Serialization.Serialize(message);
+            string json = Serialization.Serialize(message, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 

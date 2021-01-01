@@ -36,7 +36,7 @@ namespace TCPChat_Server
                 RSAModulus = Encryption.RSAModulus,
             });
 
-            string json = Serialization.Serialize(serverMessage);
+            string json = Serialization.Serialize(serverMessage, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 

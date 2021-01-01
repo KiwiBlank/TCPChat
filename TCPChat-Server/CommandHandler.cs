@@ -35,7 +35,7 @@ namespace TCPChat_Server
                 Data = message,
             });
 
-            string json = Serialization.Serialize(serverMessage);
+            string json = Serialization.Serialize(serverMessage, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 

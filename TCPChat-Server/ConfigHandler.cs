@@ -17,9 +17,9 @@ namespace TCPChat_Server
             {
                 List<ServerConfigFormat> defaultConfig = new List<ServerConfigFormat>();
 
-                defaultConfig.Add(new ServerConfigFormat { ServerName = "Your Server Name", ServerWelcomeMessage = "Welcome to my server!" });
+                defaultConfig.Add(new ServerConfigFormat { ServerName = "Your Server Name", ServerWelcomeMessage = "Welcome to my server!", ClientTimeBetweenMessages = 500 });
 
-                string serialize = Serialization.Serialize(defaultConfig);
+                string serialize = Serialization.Serialize(defaultConfig, true);
 
                 File.WriteAllText(fileDir, serialize);
 
@@ -35,6 +35,7 @@ namespace TCPChat_Server
 
             ServerConfigFormat.serverChosenName = userConfig[0].ServerName;
             ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].ServerWelcomeMessage;
+            ServerConfigFormat.serverChosenClientTime = userConfig[0].ClientTimeBetweenMessages;
 
         }
 
