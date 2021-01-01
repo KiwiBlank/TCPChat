@@ -61,7 +61,7 @@ namespace TCPChat_Server
         public static string PingReply(string pingTime)
         {
             long pingParse = long.Parse(pingTime);
-            long pongTime = DateTimeOffset.UnixEpoch.ToUnixTimeMilliseconds();
+            long pongTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             long timeDifference = pongTime - pingParse;
 

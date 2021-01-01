@@ -35,6 +35,11 @@ namespace TCPChat_Client
                 Option = "ping",
                 Action = PingAction.Execute,
             });
+            CommandHandler.commandList.Add(new CommandFormat
+            {
+                Option = "clear",
+                Action = ClearAction.Execute,
+            });
         }
     }
     class HelpAction
@@ -96,9 +101,16 @@ namespace TCPChat_Client
             {
                 MessageType = MessageTypes.DATAREQUEST,
                 DataType = CommandDataTypes.PING,
-                Parameters = DateTimeOffset.UnixEpoch.ToUnixTimeMilliseconds().ToString()
+                Parameters = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString()
             });
             MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
+        }
+    }
+    class ClearAction
+    {
+        public static void Execute()
+        {
+            Console.Clear();
         }
     }
 }

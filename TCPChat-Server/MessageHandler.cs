@@ -52,36 +52,43 @@ namespace TCPChat_Server
             }
         }
 
+
         // The loop to recieve incoming packets.
         public static void RecieveMessage(ClientInstance instance)
         {
+            long lastMessage = 0;
 
             byte[] bytes = new byte[8192];
 
             while ((instance.stream.Read(bytes, 0, bytes.Length)) > 0)
             {
-
-                // I had some issues with trailing zero bytes, and this solves that.
-                int i = bytes.Length - 1;
-                while (bytes[i] == 0)
+                // Checks if the client has sent messages too fast.
+                if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - lastMessage >= 500)
                 {
-                    --i;
-                }
+                    lastMessage = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                byte[] bytesResized = new byte[i + 1];
-                Array.Copy(bytes, bytesResized, i + 1);
+                    // I had some issues with trailing zero bytes, and this solves that.
+                    int i = bytes.Length - 1;
+                    while (bytes[i] == 0)
+                    {
+                        --i;
+                    }
 
-                Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
+                    byte[] bytesResized = new byte[i + 1];
+                    Array.Copy(bytes, bytesResized, i + 1);
+
+                    Array.Clear(bytes, 0, bytes.Length); // Seems to solve an issue where bytes from the last message stick around.
 
 
-                // Is client verified, meaning client has established initial connection and communication.
-                if (instance.clientVerified)
-                {
-                    VerifiedRecieve(instance, bytesResized);
-                }
-                else
-                {
-                    NotVerifiedRecieve(instance, bytesResized);
+                    // Is client verified, meaning client has established initial connection and communication.
+                    if (instance.clientVerified)
+                    {
+                        VerifiedRecieve(instance, bytesResized);
+                    }
+                    else
+                    {
+                        NotVerifiedRecieve(instance, bytesResized);
+                    }
                 }
             }
         }
@@ -155,13 +162,13 @@ namespace TCPChat_Server
             });
 
             // Check if server and client versions are the same before continuing.
-            if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
+            /*if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
             {
                 // Remove the item just added to active clients.
                 // The reason it is added before is to have a list to index when sending server message to.
                 ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
                 return;
-            }
+            }*/
 
             string message = String.Format("{0} has connected.", list[0].Username);
             ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
