@@ -126,6 +126,17 @@ namespace TCPChat_Server
                     try
                     {
                         messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+
+                        // ID Check
+                        if (!CheckClientID(messageList[0].ID, instance))
+                        {
+                            int index = ServerMessage.FindClientKeysIndex(instance.client);
+                            string serverMessage = String.Format("{0} Was kicked due to an invalid ID.", ServerHandler.activeClients[index].Username);
+                            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                            instance.client.Close();
+                            return;
+                        }
+
                         ConsoleOutput.RecievedMessageFormat(messageList);
 
                         // Encrypts the message and sends it to all clients.
@@ -151,10 +162,11 @@ namespace TCPChat_Server
 
             List<ConnectionMessageFormat> list = Serialization.DeserializeConnectionMessageFormat(messageFormatted);
 
-
+            int clientID = NextAvailableClientID();
             // Add this client to NetStreams to keep track of connection.
             ServerHandler.activeClients.Add(new ClientList
             {
+                ID = clientID,
                 TCPClient = instance.client,
                 Username = list[0].Username,
                 RSAExponent = list[0].RSAExponent,
@@ -185,7 +197,8 @@ namespace TCPChat_Server
                 ServerName = ServerConfigFormat.serverChosenName,
                 RSAExponent = Encryption.RSAExponent,
                 RSAModulus = Encryption.RSAModulus,
-                ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                ClientID = clientID
             });
 
 
@@ -204,6 +217,33 @@ namespace TCPChat_Server
             }
 
             StreamHandler.WriteToStream(instance.stream, data);
+        }
+        // Will find an ID to assign a new client, auto increments.
+        public static int NextAvailableClientID()
+        {
+            int highestID = 0;
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                if (ServerHandler.activeClients[i].ID >= highestID)
+                {
+                    highestID = ServerHandler.activeClients[i].ID + 1;
+                }
+            }
+            return highestID;
+
+        }
+        // Will check if a client's message actually comes from the correct client.
+        // Makes sure a client can't pose as another user.
+        public static bool CheckClientID(int IDToCheck, ClientInstance instance)
+        {
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                if (ServerHandler.activeClients[i].ID == IDToCheck && ServerHandler.activeClients[i].TCPClient == instance.client)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

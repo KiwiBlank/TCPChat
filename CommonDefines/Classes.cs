@@ -22,6 +22,7 @@ namespace CommonDefines
     // Keeps a list of clients and their RSA public key.
     public class ClientList
     {
+        public int ID { get; set; }
         public TcpClient TCPClient { get; set; }
         public string Username { get; set; }
         public byte[] RSAExponent { get; set; }
@@ -54,6 +55,7 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public string ServerVersion { get; set; }
+        public int ClientID { get; set; }
     }
     public class DataRequestFormat
     {
@@ -72,6 +74,7 @@ namespace CommonDefines
     {
         public MessageTypes MessageType { get; set; }
         public string Message { get; set; }
+        public int ID { get; set; }
     }
     // The format that the user config should follow.
     public class UserConfigFormat

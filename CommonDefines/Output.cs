@@ -12,7 +12,7 @@ namespace CommonDefines
         }
         public static void RecievedMessageFormat(List<MessageFormat> list)
         {
-            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UserNameColor);
+            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UserNameColor, list[0].ID);
         }
         public static void RecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
         {
@@ -25,11 +25,11 @@ namespace CommonDefines
             Encryption.clientCopyOfServerPublicKey = key;
         }
         // This is the common output method for both server and client.
-        public static void OutputMessage(string message, string username, ConsoleColor color)
+        public static void OutputMessage(string message, string username, ConsoleColor color, int id)
         {
             Console.ForegroundColor = color;
 
-            string output = String.Format("{0}: {1}", username, message);
+            string output = String.Format("({0}) {1}: {2}", id, username, message);
 
             Console.WriteLine(output);
             Console.ResetColor();

@@ -7,12 +7,15 @@ namespace TCPChat_Client
 {
     public class ClientRecievedTypes
     {
+        public static int ClientAssignedID;
         public static void ClientRecievedWelcomeMessage(byte[] data, Int32 bytes)
         {
             string responseData = Encoding.ASCII.GetString(data, 0, bytes);
             string text = Common.ReturnEndOfStream(responseData);
 
             List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
+
+            ClientAssignedID = connectList[0].ClientID;
 
             ConsoleOutput.RecievedWelcomeMessageFormat(connectList);
         }
