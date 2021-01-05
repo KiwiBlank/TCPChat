@@ -58,7 +58,7 @@ namespace TCPChat_Client
                     if (messageString.Substring(0, 1) == "/")
                     {
 
-                        CommandHandler.GetCommandType(messageString);
+                        Commands.GetCommandType(messageString);
                         InputMessage(client, stream);
 
                     }

@@ -57,6 +57,34 @@ namespace TCPChat_Server
             Console.ReadLine();
         }
 
+        // Console Read Loop
+        public static void InputMessage()
+        {
+            new Thread(() =>
+            {
+                string messageString = Console.ReadLine();
+                // Disallow sending empty information to stream.
+                if (!string.IsNullOrWhiteSpace(messageString))
+                {
+                    // Check if first character is / which means a command is being input.
+                    if (messageString.Substring(0, 1) == "/")
+                    {
+
+                        Commands.GetCommandType(messageString);
+                        InputMessage();
+
+                    } else
+                    {
+                        InputMessage();
+                    }
+                }
+                else
+                {
+                    InputMessage();
+                }
+            }).Start();
+        }
+
         // The object that is used for each client.
         public static void ServerObject(object obj)
         {
@@ -69,6 +97,12 @@ namespace TCPChat_Server
                 instance.client = client;
                 instance.stream = client.GetStream();
 
+                // Check if client's IP is banned.
+                if (Bans.IsBanned(((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString()))
+                {
+                    Console.WriteLine("{0} Was refused connection, client is banned.", ((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString());
+                    instance.client.Close();
+                }
                 // Loop to receive all the data sent by the client.
                 MessageHandler.RecieveMessage(instance);
 
@@ -95,6 +129,11 @@ namespace TCPChat_Server
                         int index = ServerMessage.FindClientKeysIndex(client);
                         string message = String.Format("{0} disconnected.", activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
+                        break;
+                        // 10004 does not need certain handling messages.
+                        // It appears when an user is kicked or banned.
+                        // May need to be investigated further.
+                    case 10004:
                         break;
                     default:
                         Console.WriteLine("Exception: {0}", e);

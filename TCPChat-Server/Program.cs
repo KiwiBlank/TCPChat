@@ -14,8 +14,10 @@ namespace TCPChat_Server
         {
 
             ConfigHandler.WriteDefaultConfig();
+            Bans.CreateBanFile();
             Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
+            AddCommands.Add();
 
             bool quitNow = false;
             while (!quitNow)
@@ -44,6 +46,7 @@ namespace TCPChat_Server
         public static void InputServerConfig()
         {
 #if (DEVMODE)
+            ServerHandler.InputMessage();
 
             ServerHandler.StartServer("0.0.0.0", "6060");
 
@@ -54,8 +57,10 @@ namespace TCPChat_Server
             string serverPort = Console.ReadLine();
 
             // 0.0.0.0 To listen on all network interfaces
-            ServerHandler.StartServer("0.0.0.0", serverPort);
+            ServerHandler.InputMessage();
 
+            ServerHandler.StartServer("0.0.0.0", serverPort);
+            
 #endif
 
 

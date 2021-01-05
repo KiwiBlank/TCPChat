@@ -10,32 +10,32 @@ namespace TCPChat_Client
         public static void Add()
         {
 
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "help",
                 Action = HelpAction.Execute,
             });
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "client",
                 Action = ClientDataAction.Execute,
             });
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "exit",
                 Action = ExitAction.Execute,
             });
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "list",
                 Action = ClientListAction.Execute,
             });
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "ping",
                 Action = PingAction.Execute,
             });
-            CommandHandler.commandList.Add(new CommandFormat
+            Commands.commandList.Add(new CommandFormat
             {
                 Option = "clear",
                 Action = ClearAction.Execute,
@@ -47,9 +47,9 @@ namespace TCPChat_Client
         public static void Execute()
         {
             Console.WriteLine("The available commands are:");
-            for (int i = 0; i < CommandHandler.commandList.Count; i++)
+            for (int i = 0; i < Commands.commandList.Count; i++)
             {
-                Console.WriteLine(String.Format("/{0}", CommandHandler.commandList[i].Option));
+                Console.WriteLine(String.Format("/{0}", Commands.commandList[i].Option));
             }
         }
     }
@@ -83,12 +83,12 @@ namespace TCPChat_Client
     {
         public static void Execute()
         {
-            if (String.IsNullOrWhiteSpace(CommandHandler.CommandArgument))
+            if (String.IsNullOrWhiteSpace(Commands.CommandArgument))
             {
                 Console.WriteLine("Command requires parameters.");
                 return;
             }
-            Console.WriteLine("{0}", CommandHandler.CommandArgument);
+            Console.WriteLine("{0}", Commands.CommandArgument);
         }
     }
     class PingAction
