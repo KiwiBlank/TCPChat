@@ -18,7 +18,7 @@ namespace TCPChat_Client
             AddCommands.Add();
 
 
-        bool quitNow = false;
+            bool quitNow = false;
             while (!quitNow)
             {
                 Console.Title = "TCPChat - Client";

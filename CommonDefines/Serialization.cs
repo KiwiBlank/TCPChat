@@ -51,7 +51,8 @@ namespace CommonDefines
             if (indent)
             {
                 json = JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true });
-            } else
+            }
+            else
             {
                 json = JsonSerializer.Serialize(list);
             }

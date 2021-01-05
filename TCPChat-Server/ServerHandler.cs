@@ -73,7 +73,8 @@ namespace TCPChat_Server
                         Commands.GetCommandType(messageString);
                         InputMessage();
 
-                    } else
+                    }
+                    else
                     {
                         InputMessage();
                     }
@@ -130,9 +131,9 @@ namespace TCPChat_Server
                         string message = String.Format("{0} disconnected.", activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                         break;
-                        // 10004 does not need certain handling messages.
-                        // It appears when an user is kicked or banned.
-                        // May need to be investigated further.
+                    // 10004 does not need certain handling messages.
+                    // It appears when an user is kicked or banned.
+                    // May need to be investigated further.
                     case 10004:
                         break;
                     default:

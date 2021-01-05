@@ -1,7 +1,6 @@
 ﻿using CommonDefines;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 
 namespace TCPChat_Client
 {

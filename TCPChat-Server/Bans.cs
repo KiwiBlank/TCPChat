@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace TCPChat_Server
 {
@@ -13,7 +11,8 @@ namespace TCPChat_Server
             if (File.Exists(bansFileLocation))
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
