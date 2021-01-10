@@ -187,7 +187,7 @@ namespace TCPChat_Server
 
             instance.clientVerified = true;
 
-            List<WelcomeMessageFormat> welcomeMessage = new List<WelcomeMessageFormat>();
+            List<WelcomeMessageFormat> welcomeMessage = new ();
 
             welcomeMessage.Add(new WelcomeMessageFormat
             {

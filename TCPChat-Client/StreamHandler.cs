@@ -26,7 +26,7 @@ namespace TCPChat_Client
         }
         public static void SendConnectionMessage(TcpClient client, NetworkStream stream)
         {
-            List<ConnectionMessageFormat> message = new List<ConnectionMessageFormat>();
+            List<ConnectionMessageFormat> message = new ();
 
             // See the messageformat class in VariableDefines.
             // The formatting for a client's message

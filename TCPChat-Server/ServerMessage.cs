@@ -9,7 +9,7 @@ namespace TCPChat_Server
     {
         public static void ServerGlobalMessage(ConsoleColor color, string message)
         {
-            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
+            List<ServerMessageFormat> serverMessage = new ();
 
             serverMessage.Add(new ServerMessageFormat
             {
@@ -24,7 +24,7 @@ namespace TCPChat_Server
         }
         public static void ServerClientMessage(ClientInstance instance, ConsoleColor color, string message)
         {
-            List<ServerMessageFormat> serverMessage = new List<ServerMessageFormat>();
+            List<ServerMessageFormat> serverMessage = new ();
 
             serverMessage.Add(new ServerMessageFormat
             {

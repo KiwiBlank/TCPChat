@@ -11,7 +11,7 @@ namespace CommonDefines
     public class Commands
     {
         // Keep a list of all commands.
-        public static List<CommandFormat> commandList = new List<CommandFormat>();
+        public static List<CommandFormat> commandList = new ();
         // A variable to update when an argument is written as a command.
         public static string CommandArgument;
 

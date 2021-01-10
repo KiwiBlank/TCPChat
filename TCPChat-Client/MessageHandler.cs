@@ -64,7 +64,7 @@ namespace TCPChat_Client
                     else
                     // Regular message.
                     {
-                        List<MessageFormat> newMessage = new List<MessageFormat>();
+                        List<MessageFormat> newMessage = new ();
 
                         // See the messageformat class in VariableDefines.
                         // The formatting for a client's message

@@ -25,7 +25,7 @@ namespace TCPChat_Server
         }
         public static void ReplyToDataRequest(ClientInstance instance, string message, CommandDataTypes dataType)
         {
-            List<DataReplyFormat> serverMessage = new List<DataReplyFormat>();
+            List<DataReplyFormat> serverMessage = new ();
 
             serverMessage.Add(new DataReplyFormat
             {
@@ -46,7 +46,7 @@ namespace TCPChat_Server
         }
         public static string ClientListString()
         {
-            List<string> usernames = new List<string>();
+            List<string> usernames = new ();
 
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {

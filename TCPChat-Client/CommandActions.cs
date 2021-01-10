@@ -63,7 +63,7 @@ namespace TCPChat_Client
     {
         public static void Execute()
         {
-            List<DataRequestFormat> message = new List<DataRequestFormat>();
+            List<DataRequestFormat> message = new();
 
             // See the messageformat class in VariableDefines.
             // The formatting for a client's message
@@ -94,7 +94,7 @@ namespace TCPChat_Client
     {
         public static void Execute()
         {
-            List<DataRequestFormat> message = new List<DataRequestFormat>();
+            List<DataRequestFormat> message = new();
 
             message.Add(new DataRequestFormat
             {
