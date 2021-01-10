@@ -87,7 +87,7 @@ namespace TCPChat_Server
                 bool parse = int.TryParse(Commands.CommandArgument, out outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
-                    string message = String.Format("{0} has been banned.", ServerHandler.activeClients[i].Username);
+                    string message = String.Format("({0}) {1} has been banned.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);
                     ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                     Bans.AddNewBan(((IPEndPoint)ServerHandler.activeClients[i].TCPClient.Client.RemoteEndPoint).Address.ToString());
                     // Try / catch as an out of range solution. 
@@ -111,7 +111,7 @@ namespace TCPChat_Server
                 bool parse = int.TryParse(Commands.CommandArgument, out outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
-                    string message = String.Format("{0} has been kicked.", ServerHandler.activeClients[i].Username);
+                    string message = String.Format("({0}) {1} has been kicked.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);
                     ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                     // Try / catch as an out of range solution. 
                     try

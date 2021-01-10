@@ -37,7 +37,6 @@ namespace TCPChat_Client
                 RSAModulus = Encryption.RSAModulus,
                 RSAExponent = Encryption.RSAExponent,
                 ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                ClientID = ClientRecievedTypes.ClientAssignedID
             });
             // Do not encrypt and do not read console after.
             MessageHandler.PrepareMessage(message, client, stream, false, false);

@@ -130,7 +130,7 @@ namespace TCPChat_Server
                         if (!CheckClientID(messageList[0].ID, instance))
                         {
                             int index = ServerMessage.FindClientKeysIndex(instance.client);
-                            string serverMessage = String.Format("{0} Was kicked due to an invalid ID.", ServerHandler.activeClients[index].Username);
+                            string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid ID.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
                             ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
                             instance.client.Close();
                             return;
@@ -144,7 +144,7 @@ namespace TCPChat_Server
                     catch (JsonException)
                     {
                         int index = ServerMessage.FindClientKeysIndex(instance.client);
-                        string serverMessage = String.Format("{0} Was kicked due to an invalid message.", ServerHandler.activeClients[index].Username);
+                        string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid message.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
                         instance.client.Close();
                     }
@@ -181,7 +181,7 @@ namespace TCPChat_Server
                 return;
             }*/
 
-            string message = String.Format("({0}) {1} connected.", list[0].ClientID, list[0].Username);
+            string message = String.Format("({0}) {1} connected.", clientID, list[0].Username);
             ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
 
 
@@ -218,9 +218,9 @@ namespace TCPChat_Server
             StreamHandler.WriteToStream(instance.stream, data);
         }
         // Will find an ID to assign a new client, auto increments.
+        public static int highestID = 0;
         public static int NextAvailableClientID()
         {
-            int highestID = 0;
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
                 if (ServerHandler.activeClients[i].ID >= highestID)

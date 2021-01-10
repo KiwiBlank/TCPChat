@@ -45,7 +45,6 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public string ClientVersion { get; set; }
-        public int ClientID { get; set; }
     }
     public class WelcomeMessageFormat
     {

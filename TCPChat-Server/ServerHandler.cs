@@ -128,7 +128,7 @@ namespace TCPChat_Server
                 {
                     case 10054:
                         int index = ServerMessage.FindClientKeysIndex(client);
-                        string message = String.Format("(0) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
+                        string message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                         break;
                     // 10004 does not need certain handling messages.
