@@ -90,8 +90,12 @@ namespace TCPChat_Server
                     string message = String.Format("{0} has been banned.", ServerHandler.activeClients[i].Username);
                     ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                     Bans.AddNewBan(((IPEndPoint)ServerHandler.activeClients[i].TCPClient.Client.RemoteEndPoint).Address.ToString());
-                    // TODO Add an out of index check.
-                    ServerHandler.activeClients[i].TCPClient.Close();
+                    // Try / catch as an out of range solution. 
+                    try
+                    {
+                        ServerHandler.activeClients[i].TCPClient.Close();
+                    }
+                    catch (ArgumentOutOfRangeException) {}
                     return;
                 }
             }
@@ -109,8 +113,12 @@ namespace TCPChat_Server
                 {
                     string message = String.Format("{0} has been kicked.", ServerHandler.activeClients[i].Username);
                     ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
-                    // TODO Add an out of index check.
-                    ServerHandler.activeClients[i].TCPClient.Close();
+                    // Try / catch as an out of range solution. 
+                    try
+                    {
+                        ServerHandler.activeClients[i].TCPClient.Close();
+                    }
+                    catch (ArgumentOutOfRangeException) {}
                     return;
                 }
             }
