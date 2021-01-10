@@ -122,13 +122,19 @@ namespace TCPChat_Server
             {
 
                 int excID = ExceptionData.ExceptionIdentification(e);
-
+                int index = ServerMessage.FindClientKeysIndex(client);
+                string message;
 
                 switch (excID)
                 {
+                    // Seems that 10054 now appears as of .NET 5 when a disconnect occurs.
+                    // Need to investigate if 10053 is still active.
                     case 10054:
-                        int index = ServerMessage.FindClientKeysIndex(client);
-                        string message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
+                        message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
+                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
+                        break;
+                    case 10053:
+                        message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
                         break;
                     // 10004 does not need certain handling messages.
