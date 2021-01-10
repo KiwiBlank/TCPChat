@@ -181,7 +181,7 @@ namespace TCPChat_Server
                 return;
             }*/
 
-            string message = String.Format("{0} has connected.", list[0].Username);
+            string message = String.Format("({0}) {1} connected.", list[0].ClientID, list[0].Username);
             ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
 
 
