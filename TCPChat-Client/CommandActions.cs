@@ -8,7 +8,6 @@ namespace TCPChat_Client
     {
         public static void Add()
         {
-            // TODO Improve commands with help text, alias and more information.
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "help",
@@ -94,7 +93,7 @@ namespace TCPChat_Client
         {
             List<DataRequestFormat> message = new();
 
-            // TODO Documentation
+            // Make a request to the server to switch to a different channel.
             message.Add(new DataRequestFormat
             {
                 MessageType = MessageTypes.DATAREQUEST,
