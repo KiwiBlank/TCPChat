@@ -7,6 +7,8 @@ namespace CommonDefines
     {
         public string Option { get; set; }
         public Action Action { get; set; }
+        public string Help { get; set; }
+        public List<string> Alias = new();
     }
     public class Commands
     {

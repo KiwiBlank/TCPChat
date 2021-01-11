@@ -13,31 +13,43 @@ namespace TCPChat_Server
             {
                 Option = "help",
                 Action = HelpAction.Execute,
+                Alias = { "h" },
+                Help = "This command lists all available commands and their description."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "exit",
                 Action = ExitAction.Execute,
+                Alias = { "q" },
+                Help = "Exit the application."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "list",
                 Action = ClientListAction.Execute,
+                Alias = { },
+                Help = "Queries the server and recieves a list of all connected users."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "clear",
                 Action = ClearAction.Execute,
+                Alias = { },
+                Help = "Clear your console."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "banip",
                 Action = BanIPAction.Execute,
+                Alias = { },
+                Help = "Input a client's ID to ban their IP from the server. See bans.dat to edit bans."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "kick",
                 Action = KickAction.Execute,
+                Alias = { },
+                Help = "Input a client's ID to remove them from the server temporarily."
             });
         }
     }
@@ -55,7 +67,19 @@ namespace TCPChat_Server
             Console.WriteLine("The available commands are:");
             for (int i = 0; i < Commands.commandList.Count; i++)
             {
+                Console.WriteLine("Command:");
                 Console.WriteLine(String.Format("/{0}", Commands.commandList[i].Option));
+                if (Commands.commandList[i].Alias.Count > 0)
+                {
+                    Console.WriteLine("Alias:");
+                }
+                for (int j = 0; j < Commands.commandList[i].Alias.Count; j++)
+                {
+                    Console.WriteLine(String.Format("/{0}", Commands.commandList[i].Alias[j]));
+                }
+                Console.WriteLine("Information:");
+                Console.WriteLine(String.Format("{0}", Commands.commandList[i].Help));
+                Console.WriteLine();
             }
         }
     }

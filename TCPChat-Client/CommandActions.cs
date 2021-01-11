@@ -13,41 +13,57 @@ namespace TCPChat_Client
             {
                 Option = "help",
                 Action = HelpAction.Execute,
+                Alias = { "h" },
+                Help = "This command lists all available commands and their description."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "client",
                 Action = ClientDataAction.Execute,
+                Alias = {  },
+                Help = "WIP Not in use."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "exit",
                 Action = ExitAction.Execute,
+                Alias = { "q" },
+                Help = "Exit the application."
             });
             Commands.commandList.Add(new CommandFormat
             {
-                Option = "c",
+                Option = "channel",
                 Action = ChannelSwitchAction.Execute,
+                Alias = { "c" },
+                Help = "Switch your channel to ID."
             });
             Commands.commandList.Add(new CommandFormat
             {
-                Option = "cinfo",
+                Option = "channelinfo",
                 Action = CurrentChannelAction.Execute,
+                Alias = { "cinfo" },
+                Help = "Get information about your current channel."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "list",
                 Action = ClientListAction.Execute,
+                Alias = {  },
+                Help = "Queries the server and recieves a list of all connected users."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "ping",
                 Action = PingAction.Execute,
+                Alias = { },
+                Help = "Ping the server and see the latency between client and server."
             });
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "clear",
                 Action = ClearAction.Execute,
+                Alias = { },
+                Help = "Clear your console."
             });
         }
     }
@@ -58,7 +74,19 @@ namespace TCPChat_Client
             Console.WriteLine("The available commands are:");
             for (int i = 0; i < Commands.commandList.Count; i++)
             {
+                Console.WriteLine("Command:");
                 Console.WriteLine(String.Format("/{0}", Commands.commandList[i].Option));
+                if (Commands.commandList[i].Alias.Count > 0)
+                {
+                    Console.WriteLine("Alias:");
+                }
+                for (int j = 0; j < Commands.commandList[i].Alias.Count; j++)
+                {
+                    Console.WriteLine(String.Format("/{0}", Commands.commandList[i].Alias[j]));
+                }
+                Console.WriteLine("Information:");
+                Console.WriteLine(String.Format("{0}", Commands.commandList[i].Help));
+                Console.WriteLine();
             }
         }
     }
