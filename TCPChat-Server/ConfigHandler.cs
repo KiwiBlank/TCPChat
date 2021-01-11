@@ -17,7 +17,12 @@ namespace TCPChat_Server
             {
                 List<ServerConfigFormat> defaultConfig = new();
 
-                defaultConfig.Add(new ServerConfigFormat { ServerName = "Your Server Name", ServerWelcomeMessage = "Welcome to my server!", ClientTimeBetweenMessages = 500, DefaultChannelID = 0 });
+                defaultConfig.Add(new ServerConfigFormat { 
+                    ServerName = "Your Server Name", 
+                    ServerWelcomeMessage = "Welcome to my server!", 
+                    ClientTimeBetweenMessages = 500, 
+                    DefaultChannelID = 0 
+                });
 
                 string serialize = Serialization.Serialize(defaultConfig, true);
 
@@ -31,20 +36,13 @@ namespace TCPChat_Server
         }
         public static void ReadConfig(string configRead)
         {
-            List<ServerConfigFormat> userConfig = DeserializeConfig(configRead);
+            List<ServerConfigFormat> userConfig = JsonSerializer.Deserialize<List<ServerConfigFormat>>(configRead);
 
             ServerConfigFormat.serverChosenName = userConfig[0].ServerName;
             ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].ServerWelcomeMessage;
             ServerConfigFormat.serverChosenClientTime = userConfig[0].ClientTimeBetweenMessages;
             ServerConfigFormat.serverChosenDefaultChannelID = userConfig[0].DefaultChannelID;
 
-        }
-
-        public static List<ServerConfigFormat> DeserializeConfig(string config)
-        {
-            List<ServerConfigFormat> json = JsonSerializer.Deserialize<List<ServerConfigFormat>>(config);
-
-            return json;
         }
     }
 }
