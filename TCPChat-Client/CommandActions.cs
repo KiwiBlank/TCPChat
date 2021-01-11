@@ -20,7 +20,7 @@ namespace TCPChat_Client
             {
                 Option = "client",
                 Action = ClientDataAction.Execute,
-                Alias = {  },
+                Alias = { },
                 Help = "WIP Not in use."
             });
             Commands.commandList.Add(new CommandFormat
@@ -48,7 +48,7 @@ namespace TCPChat_Client
             {
                 Option = "list",
                 Action = ClientListAction.Execute,
-                Alias = {  },
+                Alias = { },
                 Help = "Queries the server and recieves a list of all connected users."
             });
             Commands.commandList.Add(new CommandFormat
