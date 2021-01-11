@@ -14,7 +14,7 @@ namespace TCPChat_Client
 
             if (!File.Exists(fileDir))
             {
-                List<UserConfigFormat> defaultConfig = new ();
+                List<UserConfigFormat> defaultConfig = new();
 
                 defaultConfig.Add(new UserConfigFormat { Username = Environment.MachineName, UserNameColor = ConsoleColor.Gray });
 

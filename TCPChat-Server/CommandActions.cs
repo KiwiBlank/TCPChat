@@ -95,7 +95,7 @@ namespace TCPChat_Server
                     {
                         ServerHandler.activeClients[i].TCPClient.Close();
                     }
-                    catch (ArgumentOutOfRangeException) {}
+                    catch (ArgumentOutOfRangeException) { }
                     return;
                 }
             }
@@ -118,7 +118,7 @@ namespace TCPChat_Server
                     {
                         ServerHandler.activeClients[i].TCPClient.Close();
                     }
-                    catch (ArgumentOutOfRangeException) {}
+                    catch (ArgumentOutOfRangeException) { }
                     return;
                 }
             }

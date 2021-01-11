@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace TCPChat_Server
 {
@@ -75,7 +73,7 @@ namespace TCPChat_Server
             if (ChannelDataFileExists())
             {
                 string fileRead = File.ReadAllText(channelDataFileLocation);
-                List<ChannelFileFormat> channelsList = new ();
+                List<ChannelFileFormat> channelsList = new();
                 try
                 {
                     serverChannels = JsonSerializer.Deserialize<List<ChannelFileFormat>>(fileRead);
@@ -88,7 +86,7 @@ namespace TCPChat_Server
         }
         public static bool VerifyChannelStructure()
         {
-            List<int> idList = new ();
+            List<int> idList = new();
             if (!serverChannels.Any())
             {
                 return false;

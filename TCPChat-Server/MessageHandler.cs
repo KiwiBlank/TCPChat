@@ -33,7 +33,7 @@ namespace TCPChat_Server
             string json = Serialization.Serialize(list, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
-            
+
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
                 // Same channel check.
@@ -221,7 +221,7 @@ namespace TCPChat_Server
 
             instance.clientVerified = true;
 
-            List<WelcomeMessageFormat> welcomeMessage = new ();
+            List<WelcomeMessageFormat> welcomeMessage = new();
 
             welcomeMessage.Add(new WelcomeMessageFormat
             {

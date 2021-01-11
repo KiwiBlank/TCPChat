@@ -16,7 +16,7 @@ namespace TCPChat_Server
     }
     class ServerHandler
     {
-        public static List<ClientList> activeClients = new ();
+        public static List<ClientList> activeClients = new();
 
         public static void StartServer(string serverIPString, string portServer)
         {

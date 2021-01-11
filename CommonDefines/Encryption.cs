@@ -155,7 +155,7 @@ namespace CommonDefines
 
         public static byte[] ExtractKeyFromMessage(byte[] data)
         {
-            List<byte> byteList = new ();
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -169,7 +169,7 @@ namespace CommonDefines
         }
         public static byte[] ExtractIVFromBytes(byte[] data)
         {
-            List<byte> byteList = new ();
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -183,7 +183,7 @@ namespace CommonDefines
         }
         public static byte[] ExtractKeyFromBytes(byte[] data)
         {
-            List<byte> byteList = new ();
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -197,8 +197,8 @@ namespace CommonDefines
         }
         public static byte[] AppendKeyToMessage(byte[] data, byte[] IV, byte[] key, RSAParameters publicKey)
         {
-            List<byte> listKey = new ();
-            List<byte> listMain = new ();
+            List<byte> listKey = new();
+            List<byte> listMain = new();
 
             // Add the keys to a separate list
             listKey.AddRange(key);
