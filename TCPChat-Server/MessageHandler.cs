@@ -24,6 +24,38 @@ namespace TCPChat_Server
 
             return finalBytes;
         }
+        public static void RepeatToAllClientsInChannel<T>(List<T> list, ClientInstance instance)
+        {
+            // Get the index of the client initially sending the message.
+            // This is to get the channel ID from the user, and to only transmit to others with that channel ID.
+            int index = ServerMessage.FindClientKeysIndex(instance.client);
+
+            string json = Serialization.Serialize(list, false);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+            
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                // Same channel check.
+                if (ServerHandler.activeClients[i].ChannelID == ServerHandler.activeClients[index].ChannelID)
+                {
+                    byte[] encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+                    // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
+                    try
+                    {
+                        StreamHandler.WriteToStream(ServerHandler.activeClients[i].TCPClient.GetStream(), encrypted);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        ServerHandler.activeClients.RemoveAt(i);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        ServerHandler.activeClients.RemoveAt(i);
+                    }
+                }
+            }
+        }
         public static void RepeatToAllClients<T>(List<T> list)
         {
             string json = Serialization.Serialize(list, false);
@@ -127,6 +159,7 @@ namespace TCPChat_Server
                         messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
                         // ID Check
+                        // TODO Investigate if it works correctly.
                         if (!CheckClientID(messageList[0].ID, instance))
                         {
                             int index = ServerMessage.FindClientKeysIndex(instance.client);
@@ -139,7 +172,7 @@ namespace TCPChat_Server
                         ConsoleOutput.RecievedMessageFormat(messageList);
 
                         // Encrypts the message and sends it to all clients.
-                        RepeatToAllClients(messageList);
+                        RepeatToAllClientsInChannel(messageList, instance);
                     }
                     catch (JsonException)
                     {
@@ -166,6 +199,7 @@ namespace TCPChat_Server
             ServerHandler.activeClients.Add(new ClientList
             {
                 ID = clientID,
+                ChannelID = ServerConfigFormat.serverChosenDefaultChannelID,
                 TCPClient = instance.client,
                 Username = list[0].Username,
                 RSAExponent = list[0].RSAExponent,
@@ -197,7 +231,8 @@ namespace TCPChat_Server
                 RSAExponent = Encryption.RSAExponent,
                 RSAModulus = Encryption.RSAModulus,
                 ServerVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                ClientID = clientID
+                ClientID = clientID,
+                DefaultChannelID = ServerConfigFormat.serverChosenDefaultChannelID
             });
 
 

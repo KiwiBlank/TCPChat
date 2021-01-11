@@ -18,6 +18,7 @@ namespace TCPChat_Server
             Encryption.GenerateRSAKeys();
             Encryption.GenerateAESKeys();
             AddCommands.Add();
+            ChannelHandler.CreateChannelDataFile();
 
             bool quitNow = false;
             while (!quitNow)

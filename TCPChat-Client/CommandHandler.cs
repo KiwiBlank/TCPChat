@@ -16,6 +16,9 @@ namespace TCPChat_Client
                 case CommandDataTypes.PING:
                     RecievedPingReply(list[0].Data);
                     break;
+                case CommandDataTypes.CHANNELSWITCH:
+                    RecievedNewChannelID(list[0].Data);
+                    break;
                 default:
                     break;
             }
@@ -29,6 +32,16 @@ namespace TCPChat_Client
         public static void RecievedPingReply(string data)
         {
             Console.WriteLine("Your latency to the server is: {0} ms", data);
+        }
+        public static void RecievedNewChannelID(string data)
+        {
+            if (int.Parse(data) == ClientRecievedTypes.CurrentChannelID)
+            {
+                Console.WriteLine("ERROR: Channel has not changed.");
+                return;
+            }
+            ClientRecievedTypes.CurrentChannelID = int.Parse(data);
+            Console.WriteLine("Channel switched to: {0}", data);
         }
     }
 }

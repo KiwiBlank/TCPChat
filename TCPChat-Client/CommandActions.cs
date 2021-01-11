@@ -8,7 +8,7 @@ namespace TCPChat_Client
     {
         public static void Add()
         {
-
+            // TODO Improve commands with help text, alias and more information.
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "help",
@@ -23,6 +23,16 @@ namespace TCPChat_Client
             {
                 Option = "exit",
                 Action = ExitAction.Execute,
+            });
+            Commands.commandList.Add(new CommandFormat
+            {
+                Option = "c",
+                Action = ChannelSwitchAction.Execute,
+            });
+            Commands.commandList.Add(new CommandFormat
+            {
+                Option = "cinfo",
+                Action = CurrentChannelAction.Execute,
             });
             Commands.commandList.Add(new CommandFormat
             {
@@ -57,6 +67,29 @@ namespace TCPChat_Client
         public static void Execute()
         {
             Environment.Exit(0);
+        }
+    }
+    class CurrentChannelAction
+    {
+        public static void Execute()
+        {
+            Console.WriteLine("Current channel is ID: {0}", ClientRecievedTypes.CurrentChannelID);
+        }
+    }
+    class ChannelSwitchAction
+    {
+        public static void Execute()
+        {
+            List<DataRequestFormat> message = new();
+
+            // TODO Documentation
+            message.Add(new DataRequestFormat
+            {
+                MessageType = MessageTypes.DATAREQUEST,
+                DataType = CommandDataTypes.CHANNELSWITCH,
+                Parameters = Commands.CommandArgument
+            });
+            MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
     }
     class ClientListAction

@@ -19,6 +19,10 @@ namespace TCPChat_Server
                     string replyTime = PingReply(list[0].Parameters);
                     ReplyToDataRequest(instance, replyTime, CommandDataTypes.PING);
                     break;
+                case CommandDataTypes.CHANNELSWITCH:
+                    ClientChannelSwitch(instance, list[0].Parameters);
+                    // Replies in method inside ChannelHandler
+                    break;
                 default:
                     break;
             }
@@ -65,6 +69,10 @@ namespace TCPChat_Server
             long timeDifference = pongTime - pingParse;
 
             return timeDifference.ToString();
+        }
+        public static void ClientChannelSwitch(ClientInstance instance, string parameters)
+        {
+            ChannelHandler.ClientRequestsChannelSwitch(instance, parameters);
         }
     }
 }

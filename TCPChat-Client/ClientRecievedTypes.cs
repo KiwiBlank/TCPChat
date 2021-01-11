@@ -8,6 +8,7 @@ namespace TCPChat_Client
     public class ClientRecievedTypes
     {
         public static int ClientAssignedID;
+        public static int CurrentChannelID;
         public static void ClientRecievedWelcomeMessage(byte[] data, Int32 bytes)
         {
             string responseData = Encoding.ASCII.GetString(data, 0, bytes);
@@ -16,6 +17,7 @@ namespace TCPChat_Client
             List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
 
             ClientAssignedID = connectList[0].ClientID;
+            CurrentChannelID = connectList[0].DefaultChannelID;
 
             ConsoleOutput.RecievedWelcomeMessageFormat(connectList);
         }

@@ -8,7 +8,7 @@ namespace TCPChat_Server
     {
         public static void Add()
         {
-
+            // TODO Improve commands with help text, alias and more information.
             Commands.commandList.Add(new CommandFormat
             {
                 Option = "help",

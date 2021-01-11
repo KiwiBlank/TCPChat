@@ -12,6 +12,7 @@ namespace CommonDefines
         }
         public static void RecievedMessageFormat(List<MessageFormat> list)
         {
+            // TODO Include user's current channel in output.
             CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UserNameColor, list[0].ID);
         }
         public static void RecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
