@@ -151,32 +151,38 @@ namespace TCPChat_Server
             switch (Common.ReturnMessageType(messageBytes))
             {
                 case MessageTypes.MESSAGE:
+                    int index = ServerMessage.FindClientKeysIndex(instance.client);
+
                     // Error when deserializing message.
                     // Could mean corrupt or icorrect data has been transmitted.
-
                     try
                     {
                         messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-                        // ID Check
-                        // TODO Investigate if it works correctly.
-                        if (!CheckClientID(messageList[0].ID, instance))
+                        List<MessageReplyFormat> replyFormat = new();
+                        replyFormat.Add(new MessageReplyFormat 
                         {
-                            int index = ServerMessage.FindClientKeysIndex(instance.client);
-                            string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid ID.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
-                            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
-                            instance.client.Close();
-                            return;
-                        }
+                            MessageType = MessageTypes.MESSAGEREPLY,
+                            Message = messageList[0].Message,
+                            ID = ServerHandler.activeClients[index].ID,
+                            Username = ServerHandler.activeClients[index].Username,
+                            UsernameColor = ServerHandler.activeClients[index].UsernameColor,
+                        });
 
-                        ConsoleOutput.RecievedMessageFormat(messageList);
+
+                        CommonDefines.ConsoleOutput.OutputMessage
+                            (
+                            messageList[0].Message, 
+                            ServerHandler.activeClients[index].Username, 
+                            ServerHandler.activeClients[index].UsernameColor, 
+                            ServerHandler.activeClients[index].ID
+                            );
 
                         // Encrypts the message and sends it to all clients.
-                        RepeatToAllClientsInChannel(messageList, instance);
+                        RepeatToAllClientsInChannel(replyFormat, instance);
                     }
                     catch (JsonException)
                     {
-                        int index = ServerMessage.FindClientKeysIndex(instance.client);
                         string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid message.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
                         ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
                         instance.client.Close();
@@ -203,7 +209,8 @@ namespace TCPChat_Server
                 TCPClient = instance.client,
                 Username = list[0].Username,
                 RSAExponent = list[0].RSAExponent,
-                RSAModulus = list[0].RSAModulus
+                RSAModulus = list[0].RSAModulus,
+                UsernameColor = list[0].UserNameColor
             });
 
             // Check if server and client versions are the same before continuing.

@@ -24,6 +24,13 @@ namespace TCPChat_Server
             });
             Commands.commandList.Add(new CommandFormat
             {
+                Option = "client",
+                Action = ClientDataAction.Execute,
+                Alias = { },
+                Help = "WIP Not in use."
+            });
+            Commands.commandList.Add(new CommandFormat
+            {
                 Option = "list",
                 Action = ClientListAction.Execute,
                 Alias = { },
@@ -64,6 +71,25 @@ namespace TCPChat_Server
         public static void Execute()
         {
             Commands.HelpCommandCommon();
+        }
+    }
+    class ClientDataAction
+    {
+        public static void Execute()
+        {
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                int outNum;
+                bool parse = int.TryParse(Commands.CommandArgument, out outNum);
+                if (parse && ServerHandler.activeClients[i].ID == outNum)
+                {
+                    Console.WriteLine("ID: {0}", ServerHandler.activeClients[i].ID);
+                    Console.WriteLine("Name: {0}", ServerHandler.activeClients[i].Username);
+                    Console.WriteLine("IP: {0}", ((IPEndPoint)ServerHandler.activeClients[i].TCPClient.Client.RemoteEndPoint).Address.ToString());
+                    Console.WriteLine("Username Color: {0}", ServerHandler.activeClients[i].UsernameColor);
+                    Console.WriteLine("Current Channel ID: {0}", ServerHandler.activeClients[i].ChannelID);
+                }
+            }
         }
     }
     class ClientListAction

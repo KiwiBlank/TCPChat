@@ -13,12 +13,21 @@ namespace CommonDefines
         ENCRYPTED = 4,
         DATAREQUEST = 5,
         DATAREPLY = 6,
+        MESSAGEREPLY = 7
     }
     public enum CommandDataTypes : int
     {
         CLIENTLIST = 0,
         PING = 1,
         CHANNELSWITCH = 2
+    }
+    public class MessageReplyFormat
+    {
+        public MessageTypes MessageType { get; set; }
+        public int ID { get; set; }
+        public string Username { get; set; }
+        public string Message { get; set; }
+        public ConsoleColor UsernameColor { get; set; }
     }
     // Keeps a list of clients and their RSA public key.
     public class ClientList
@@ -29,7 +38,7 @@ namespace CommonDefines
         public string Username { get; set; }
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
-
+        public ConsoleColor UsernameColor { get; set; }
     }
     public class ServerMessageFormat
     {
@@ -47,6 +56,7 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public string ClientVersion { get; set; }
+        public ConsoleColor UserNameColor { get; set; }
     }
     public class WelcomeMessageFormat
     {
@@ -73,11 +83,10 @@ namespace CommonDefines
         public string Data { get; set; }
     }
     // Inherits the userconfigformat as of now.
-    public class MessageFormat : UserConfigFormat
+    public class MessageFormat
     {
         public MessageTypes MessageType { get; set; }
         public string Message { get; set; }
-        public int ID { get; set; }
     }
     // The format that the user config should follow.
     public class UserConfigFormat

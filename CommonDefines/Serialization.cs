@@ -38,6 +38,12 @@ namespace CommonDefines
 
             return messageList;
         }
+        public static List<MessageReplyFormat> DeserializeMessageReplyFormat(string text)
+        {
+            List<MessageReplyFormat> messageList = JsonSerializer.Deserialize<List<MessageReplyFormat>>(text);
+
+            return messageList;
+        }
         public static List<WelcomeMessageFormat> DeserializeWelcomeMessageFormat(string text)
         {
             List<WelcomeMessageFormat> messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);

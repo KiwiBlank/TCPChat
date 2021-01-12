@@ -82,6 +82,7 @@ namespace TCPChat_Client
     }
     class CurrentChannelAction
     {
+        // TODO Show more channel information other than ID.
         public static void Execute()
         {
             Console.WriteLine("Current channel is ID: {0}", ClientRecievedTypes.CurrentChannelID);

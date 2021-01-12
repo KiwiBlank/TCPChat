@@ -10,10 +10,12 @@ namespace CommonDefines
         {
             CommonDefines.ConsoleOutput.OutputServerMessage(list[0].Message, list[0].Color);
         }
-        public static void RecievedMessageFormat(List<MessageFormat> list)
+        public static void RecievedMessageReplyFormat(List<MessageReplyFormat> list)
         {
+            // ONLY CLIENT CAN RECIEVE MESSAGEREPLYFORMAT AS OF 1.3.0
+            // SERVER'S OUTPUT HAS BEEN MOVED.
             // TODO Include user's current channel in output.
-            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UserNameColor, list[0].ID);
+            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UsernameColor, list[0].ID);
         }
         public static void RecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
         {

@@ -33,9 +33,9 @@ namespace TCPChat_Client
 
             switch (Common.ReturnMessageType(messageBytes))
             {
-                case MessageTypes.MESSAGE:
-                    List<MessageFormat> messageFormatList = Serialization.DeserializeMessageFormat(messageFormatted);
-                    ConsoleOutput.RecievedMessageFormat(messageFormatList);
+                case MessageTypes.MESSAGEREPLY:
+                    List<MessageReplyFormat> messageFormatList = Serialization.DeserializeMessageReplyFormat(messageFormatted);
+                    ConsoleOutput.RecievedMessageReplyFormat(messageFormatList);
                     break;
                 case MessageTypes.SERVER:
                     List<ServerMessageFormat> serverFormatList = Serialization.DeserializeServerMessageFormat(messageFormatted);

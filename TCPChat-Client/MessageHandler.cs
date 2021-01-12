@@ -71,10 +71,7 @@ namespace TCPChat_Client
                         newMessage.Add(new MessageFormat
                         {
                             MessageType = MessageTypes.MESSAGE,
-                            Message = messageString,
-                            Username = UserConfigFormat.userChosenName,
-                            UserNameColor = UserConfigFormat.userChosenColor,
-                            ID = ClientRecievedTypes.ClientAssignedID
+                            Message = messageString
                         });
                         PrepareMessage(newMessage, client, stream, true, true);
                     }
