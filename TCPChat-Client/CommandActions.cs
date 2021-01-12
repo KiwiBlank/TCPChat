@@ -17,13 +17,6 @@ namespace TCPChat_Client
             });
             Commands.commandList.Add(new CommandFormat
             {
-                Option = "client",
-                Action = ClientDataAction.Execute,
-                Alias = { },
-                Help = "WIP Not in use."
-            });
-            Commands.commandList.Add(new CommandFormat
-            {
                 Option = "exit",
                 Action = ExitAction.Execute,
                 Alias = { "q" },
@@ -119,20 +112,6 @@ namespace TCPChat_Client
                 Parameters = null
             });
             MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
-        }
-    }
-
-    // TODO Implement action to get certain data like color and time online from a specific user.
-    class ClientDataAction
-    {
-        public static void Execute()
-        {
-            if (String.IsNullOrWhiteSpace(Commands.CommandArgument))
-            {
-                Console.WriteLine("Command requires parameters.");
-                return;
-            }
-            Console.WriteLine("{0}", Commands.CommandArgument);
         }
     }
     class PingAction

@@ -24,10 +24,10 @@ namespace TCPChat_Server
             });
             Commands.commandList.Add(new CommandFormat
             {
-                Option = "client",
+                Option = "clientinfo",
                 Action = ClientDataAction.Execute,
-                Alias = { },
-                Help = "WIP Not in use."
+                Alias = { "c" },
+                Help = "Input a client's ID and get specific information such as username, IP etc."
             });
             Commands.commandList.Add(new CommandFormat
             {
