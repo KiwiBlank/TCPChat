@@ -57,6 +57,13 @@ namespace TCPChat_Server
                 Alias = { },
                 Help = "Input a client's ID to remove them from the server temporarily."
             });
+            Commands.commandList.Add(new CommandFormat
+            {
+                Option = "global",
+                Action = GlobalMessageAction.Execute,
+                Alias = { },
+                Help = "Input a message to send globally to all clients."
+            });
         }
     }
     class ExitAction
@@ -107,6 +114,13 @@ namespace TCPChat_Server
         public static void Execute()
         {
             Console.Clear();
+        }
+    }
+    class GlobalMessageAction
+    {
+        public static void Execute()
+        {
+            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, Commands.CommandArgument);
         }
     }
     class BanIPAction
