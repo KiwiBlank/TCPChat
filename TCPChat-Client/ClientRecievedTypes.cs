@@ -35,7 +35,7 @@ namespace TCPChat_Client
             {
                 case MessageTypes.MESSAGEREPLY:
                     List<MessageReplyFormat> messageFormatList = Serialization.DeserializeMessageReplyFormat(messageFormatted);
-                    ConsoleOutput.RecievedMessageReplyFormat(messageFormatList);
+                    ConsoleOutput.RecievedMessageReplyFormat(messageFormatList, CurrentChannelID);
                     break;
                 case MessageTypes.SERVER:
                     List<ServerMessageFormat> serverFormatList = Serialization.DeserializeServerMessageFormat(messageFormatted);

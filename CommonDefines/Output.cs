@@ -10,12 +10,10 @@ namespace CommonDefines
         {
             CommonDefines.ConsoleOutput.OutputServerMessage(list[0].Message, list[0].Color);
         }
-        public static void RecievedMessageReplyFormat(List<MessageReplyFormat> list)
+        public static void RecievedMessageReplyFormat(List<MessageReplyFormat> list, int channelID)
         {
-            // ONLY CLIENT CAN RECIEVE MESSAGEREPLYFORMAT AS OF 1.3.0
-            // SERVER'S OUTPUT HAS BEEN MOVED.
-            // TODO Include user's current channel in output.
-            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UsernameColor, list[0].ID);
+            // CLIENT CAN ONLY RECIEVE MESSAGEREPLYFORMAT AS OF 1.3.0
+            CommonDefines.ConsoleOutput.OutputMessage(list[0].Message, list[0].Username, list[0].UsernameColor, list[0].ID, channelID);
         }
         public static void RecievedWelcomeMessageFormat(List<WelcomeMessageFormat> list)
         {
@@ -28,11 +26,11 @@ namespace CommonDefines
             Encryption.clientCopyOfServerPublicKey = key;
         }
         // This is the common output method for both server and client.
-        public static void OutputMessage(string message, string username, ConsoleColor color, int id)
+        public static void OutputMessage(string message, string username, ConsoleColor color, int id, int channelID)
         {
             Console.ForegroundColor = color;
 
-            string output = String.Format("({0}) {1}: {2}", id, username, message);
+            string output = String.Format("{0} - ({1}){2}: {3}", channelID, id, username, message);
 
             Console.WriteLine(output);
             Console.ResetColor();

@@ -160,7 +160,7 @@ namespace TCPChat_Server
                         messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
                         List<MessageReplyFormat> replyFormat = new();
-                        replyFormat.Add(new MessageReplyFormat 
+                        replyFormat.Add(new MessageReplyFormat
                         {
                             MessageType = MessageTypes.MESSAGEREPLY,
                             Message = messageList[0].Message,
@@ -169,14 +169,8 @@ namespace TCPChat_Server
                             UsernameColor = ServerHandler.activeClients[index].UsernameColor,
                         });
 
+                        ConsoleOutput.RecievedMessageReplyFormat(replyFormat, ServerHandler.activeClients[index].ChannelID);
 
-                        CommonDefines.ConsoleOutput.OutputMessage
-                            (
-                            messageList[0].Message, 
-                            ServerHandler.activeClients[index].Username, 
-                            ServerHandler.activeClients[index].UsernameColor, 
-                            ServerHandler.activeClients[index].ID
-                            );
 
                         // Encrypts the message and sends it to all clients.
                         RepeatToAllClientsInChannel(replyFormat, instance);
