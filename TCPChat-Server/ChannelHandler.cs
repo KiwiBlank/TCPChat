@@ -73,7 +73,6 @@ namespace TCPChat_Server
             if (ChannelDataFileExists())
             {
                 string fileRead = File.ReadAllText(channelDataFileLocation);
-                List<ChannelFileFormat> channelsList = new();
                 try
                 {
                     serverChannels = JsonSerializer.Deserialize<List<ChannelFileFormat>>(fileRead);
@@ -120,8 +119,7 @@ namespace TCPChat_Server
         }
         public static void ClientRequestsChannelSwitch(ClientInstance instance, string parameters)
         {
-            int outNum;
-            bool parse = int.TryParse(parameters, out outNum);
+            bool parse = int.TryParse(parameters, out int outNum);
             int index = ServerMessage.FindClientKeysIndex(instance.client);
 
             // If client has sent an invalid id.

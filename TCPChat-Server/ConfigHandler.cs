@@ -17,11 +17,12 @@ namespace TCPChat_Server
             {
                 List<ServerConfigFormat> defaultConfig = new();
 
-                defaultConfig.Add(new ServerConfigFormat { 
-                    ServerName = "Your Server Name", 
-                    ServerWelcomeMessage = "Welcome to my server!", 
-                    ClientTimeBetweenMessages = 500, 
-                    DefaultChannelID = 0 
+                defaultConfig.Add(new ServerConfigFormat
+                {
+                    ServerName = "Your Server Name",
+                    ServerWelcomeMessage = "Welcome to my server!",
+                    ClientTimeBetweenMessages = 500,
+                    DefaultChannelID = 0
                 });
 
                 string serialize = Serialization.Serialize(defaultConfig, true);

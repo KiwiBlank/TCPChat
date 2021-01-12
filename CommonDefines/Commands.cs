@@ -21,7 +21,7 @@ namespace CommonDefines
         {
             string commandOption = command.Split('/', ' ')[1];
 
-            string argument = command.Substring(command.IndexOf(commandOption) + commandOption.Length);
+            string argument = command[(command.IndexOf(commandOption) + commandOption.Length)..];
             CommandArgument = argument.Replace(" ", "");
 
             bool foundCommand = false;

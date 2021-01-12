@@ -18,7 +18,7 @@ namespace TCPChat_Client
             // Encrypts message and sends.
             if (Encrypt)
             {
-                EncryptSendMessage(data, client, stream);
+                EncryptSendMessage(data, stream);
             }
             // Does not encrypt, just sends.
             else
@@ -33,7 +33,7 @@ namespace TCPChat_Client
         }
 
         // Finalize message strucutre then write.
-        public static void EncryptSendMessage(byte[] message, TcpClient client, NetworkStream stream)
+        public static void EncryptSendMessage(byte[] message, NetworkStream stream)
         {
             // Encrypt Message Data
             byte[] encrypt = Encryption.AESEncrypt(message, Encryption.AESKey, Encryption.AESIV);

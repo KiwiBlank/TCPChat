@@ -94,9 +94,11 @@ namespace TCPChat_Server
             // Get a stream object for reading and writing
             try
             {
-                ClientInstance instance = new ClientInstance();
-                instance.client = client;
-                instance.stream = client.GetStream();
+                ClientInstance instance = new ClientInstance
+                {
+                    client = client,
+                    stream = client.GetStream()
+                };
 
                 // Check if client's IP is banned.
                 if (Bans.IsBanned(((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString()))

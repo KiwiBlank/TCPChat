@@ -44,9 +44,8 @@ namespace CommonDefines
         {
             string byteASCII = Encoding.ASCII.GetString(new byte[] { data[16] });
 
-            int outNum;
             // First step. Try parse to find out if character is an integer or not.
-            bool parse = int.TryParse(byteASCII, out outNum);
+            bool parse = int.TryParse(byteASCII, out int outNum);
             if (!parse)
             {
                 return MessageTypes.ENCRYPTED;

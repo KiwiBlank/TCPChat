@@ -86,8 +86,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                int outNum;
-                bool parse = int.TryParse(Commands.CommandArgument, out outNum);
+                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     Console.WriteLine("ID: {0}", ServerHandler.activeClients[i].ID);
@@ -129,8 +128,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                int outNum;
-                bool parse = int.TryParse(Commands.CommandArgument, out outNum);
+                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     string message = String.Format("({0}) {1} has been banned.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);
@@ -153,8 +151,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                int outNum;
-                bool parse = int.TryParse(Commands.CommandArgument, out outNum);
+                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     string message = String.Format("({0}) {1} has been kicked.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);

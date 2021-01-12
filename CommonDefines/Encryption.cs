@@ -77,9 +77,11 @@ namespace CommonDefines
 
         public static RSAParameters RSAParamaterCombiner(byte[] modulus, byte[] exponent)
         {
-            RSAParameters result = new RSAParameters();
-            result.Modulus = modulus;
-            result.Exponent = exponent;
+            RSAParameters result = new RSAParameters
+            {
+                Modulus = modulus,
+                Exponent = exponent
+            };
 
             return result;
         }
