@@ -42,6 +42,7 @@ namespace CommonDefines
         }
         public static MessageTypes ReturnMessageType(byte[] data)
         {
+            // TODO Improve this system, may be causing irregular cryptography errors.
             string byteASCII = Encoding.ASCII.GetString(new byte[] { data[16] });
 
             // First step. Try parse to find out if character is an integer or not.
