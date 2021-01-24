@@ -207,14 +207,17 @@ namespace TCPChat_Server
                 UsernameColor = list[0].UserNameColor
             });
 
-            // Check if server and client versions are the same before continuing.
-            /*if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
+            if (ServerConfigFormat.serverChosenVersionCheck)
             {
-                // Remove the item just added to active clients.
-                // The reason it is added before is to have a list to index when sending server message to.
-                ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
-                return;
-            }*/
+                // Check if server and client versions are the same before continuing.
+                if (!VersionHandler.VersionCheck(instance, list[0].ClientVersion))
+                {
+                    // Remove the item just added to active clients.
+                    // The reason it is added before is to have a list to index when sending server message to.
+                    ServerHandler.activeClients.RemoveAt(ServerHandler.activeClients.Count - 1);
+                    return;
+                }
+            }
 
             string message = String.Format("({0}) {1} connected.", clientID, list[0].Username);
             ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);

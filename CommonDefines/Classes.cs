@@ -116,11 +116,14 @@ namespace CommonDefines
         public static string serverChosenWelcomeMessage;
         public static int serverChosenClientTime;
         public static int serverChosenDefaultChannelID;
+        public static bool serverChosenVersionCheck;
 
         public string ServerName { get; set; }
         public string ServerWelcomeMessage { get; set; }
         // Milliseconds
         public int ClientTimeBetweenMessages { get; set; }
         public int DefaultChannelID { get; set; }
+        public bool EnableVersionCheck { get; set; }
+
     }
 }

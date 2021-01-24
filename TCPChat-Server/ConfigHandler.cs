@@ -22,7 +22,8 @@ namespace TCPChat_Server
                     ServerName = "Your Server Name",
                     ServerWelcomeMessage = "Welcome to my server!",
                     ClientTimeBetweenMessages = 500,
-                    DefaultChannelID = 0
+                    DefaultChannelID = 0,
+                    EnableVersionCheck = true
                 });
 
                 string serialize = Serialization.Serialize(defaultConfig, true);
@@ -43,7 +44,7 @@ namespace TCPChat_Server
             ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].ServerWelcomeMessage;
             ServerConfigFormat.serverChosenClientTime = userConfig[0].ClientTimeBetweenMessages;
             ServerConfigFormat.serverChosenDefaultChannelID = userConfig[0].DefaultChannelID;
-
+            ServerConfigFormat.serverChosenVersionCheck = userConfig[0].EnableVersionCheck;
         }
     }
 }

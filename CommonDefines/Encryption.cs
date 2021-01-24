@@ -21,6 +21,12 @@ namespace CommonDefines
 
         public const int keyLength = 256;
 
+
+
+        // TODO Add other encryption libraries which are more tested.
+        // Or redo encryption system. It is hard for me to verify the security of the current system.
+
+
         public static string DecryptMessageData(byte[] dataMessage)
         {
             // Extract the 256 bytes that make up the AES Key and IV at the beginning of the message.
