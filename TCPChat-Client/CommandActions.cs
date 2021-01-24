@@ -57,6 +57,13 @@ namespace TCPChat_Client
                 Alias = { },
                 Help = "Clear your console."
             });
+            Commands.commandList.Add(new CommandFormat
+            {
+                Option = "msg",
+                Action = PrivateMessageAction.Execute,
+                Alias = { },
+                Help = "Input a message to send to a specific client."
+            });
         }
     }
     class HelpAction
@@ -92,7 +99,7 @@ namespace TCPChat_Client
             {
                 MessageType = MessageTypes.DATAREQUEST,
                 DataType = CommandDataTypes.CHANNELSWITCH,
-                Parameters = Commands.CommandArgument
+                Parameters = Commands.CommandArguments[0]
             });
             MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
@@ -134,6 +141,26 @@ namespace TCPChat_Client
         public static void Execute()
         {
             Console.Clear();
+        }
+    }
+    class PrivateMessageAction
+    {
+        public static void Execute()
+        {
+            List<DataRequestFormat> message = new();
+
+            if (Commands.CommandArguments[0] == null || Commands.CommandArguments[1] == null)
+            {
+                return;
+            }
+
+            message.Add(new DataRequestFormat
+            {
+                MessageType = MessageTypes.DATAREQUEST,
+                DataType = CommandDataTypes.PRIVATEMESSSAGE,
+                Parameters = String.Format("{0}, {1}", Commands.CommandArguments[0], Commands.CommandArguments[1])
+            });
+            MessageHandler.PrepareMessage(message, Program.staticClient, Program.staticStream, true, false);
         }
     }
 }

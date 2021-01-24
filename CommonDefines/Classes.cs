@@ -13,13 +13,25 @@ namespace CommonDefines
         ENCRYPTED = 4,
         DATAREQUEST = 5,
         DATAREPLY = 6,
-        MESSAGEREPLY = 7
+        MESSAGEREPLY = 7,
+        PRIVATEMESSAGE = 8
     }
     public enum CommandDataTypes : int
     {
         CLIENTLIST = 0,
         PING = 1,
-        CHANNELSWITCH = 2
+        CHANNELSWITCH = 2,
+        PRIVATEMESSSAGE = 3
+    }
+    public class PrivateMessageFormat
+    {
+        public MessageTypes MessageType { get; set; }
+        public byte[] RSAExponent { get; set; }
+        public byte[] RSAModulus { get; set; }
+        public ConsoleColor Color { get; set; }
+        public string Message { get; set; }
+        public string SenderUsername { get; set; }
+        public int SenderID { get; set; }
     }
     public class MessageReplyFormat
     {

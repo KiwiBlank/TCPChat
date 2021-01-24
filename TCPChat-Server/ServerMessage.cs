@@ -22,7 +22,7 @@ namespace TCPChat_Server
             ConsoleOutput.RecievedServerMessageFormat(serverMessage);
             MessageHandler.RepeatToAllClients(serverMessage);
         }
-        public static void ServerClientMessage(ClientInstance instance, ConsoleColor color, string message)
+        public static void ServerClientMessage(TcpClient client, ConsoleColor color, string message)
         {
             List<ServerMessageFormat> serverMessage = new();
 
@@ -39,11 +39,36 @@ namespace TCPChat_Server
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 
-            int index = FindClientKeysIndex(instance.client);
+            int index = FindClientKeysIndex(client);
 
             byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
 
-            StreamHandler.WriteToStream(instance.stream, encrypted);
+            StreamHandler.WriteToStream(client.GetStream(), encrypted);
+        }
+        public static void ClientPrivateMessage(TcpClient client, ConsoleColor color, string message, int userID, string username)
+        { 
+            List<PrivateMessageFormat> privateMessage = new();
+
+            privateMessage.Add(new PrivateMessageFormat
+            {
+                MessageType = MessageTypes.PRIVATEMESSAGE,
+                Message = message,
+                Color = color,
+                RSAExponent = Encryption.RSAExponent,
+                RSAModulus = Encryption.RSAModulus,
+                SenderUsername = username,
+                SenderID = userID
+            });
+
+            string json = Serialization.Serialize(privateMessage, false);
+
+            byte[] data = Serialization.AddEndCharToMessage(json);
+
+            int index = FindClientKeysIndex(client);
+
+            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+
+            StreamHandler.WriteToStream(client.GetStream(), encrypted);
         }
         public static int FindClientKeysIndex(TcpClient client)
         {

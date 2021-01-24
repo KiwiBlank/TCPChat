@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CommonDefines
 {
@@ -15,14 +16,26 @@ namespace CommonDefines
         // Keep a list of all commands.
         public static List<CommandFormat> commandList = new();
         // A variable to update when an argument is written as a command.
-        public static string CommandArgument;
+        public static List<string> CommandArguments = new();
 
         public static void GetCommandType(string command)
         {
+            CommandArguments.Clear();
             string commandOption = command.Split('/', ' ')[1];
-
             string argument = command[(command.IndexOf(commandOption) + commandOption.Length)..];
-            CommandArgument = argument.Replace(" ", "");
+
+            if (argument.Contains(" "))
+            {
+                CommandArguments = argument.Split(" ").ToList();
+
+                // Remove because it adds index 0 as empty.
+                CommandArguments.RemoveAt(0);
+            }
+            else
+            {
+                // If there are not multiple arguments, insert to index 0
+                CommandArguments.Insert(0, argument);
+            }
 
             bool foundCommand = false;
 

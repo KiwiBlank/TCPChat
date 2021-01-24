@@ -45,6 +45,10 @@ namespace TCPChat_Client
                     List<DataReplyFormat> dataFormatList = Serialization.DeserializeDataReplyFormat(messageFormatted);
                     CommandHandler.RecievedDataReply(dataFormatList);
                     break;
+                case MessageTypes.PRIVATEMESSAGE:
+                    List<PrivateMessageFormat> privateMessagFormatList = Serialization.DeserializePrivateMessageFormat(messageFormatted);
+                    ConsoleOutput.RecievedPrivateMessageFormat(privateMessagFormatList);
+                    break;
             }
         }
     }

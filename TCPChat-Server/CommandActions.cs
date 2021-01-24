@@ -64,6 +64,13 @@ namespace TCPChat_Server
                 Alias = { },
                 Help = "Input a message to send globally to all clients."
             });
+            Commands.commandList.Add(new CommandFormat
+            {
+                Option = "msg",
+                Action = PrivateMessageAction.Execute,
+                Alias = { },
+                Help = "Input a message to send to a specific client."
+            });
         }
     }
     class ExitAction
@@ -86,7 +93,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
+                bool parse = int.TryParse(Commands.CommandArguments[0], out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     Console.WriteLine("ID: {0}", ServerHandler.activeClients[i].ID);
@@ -119,7 +126,24 @@ namespace TCPChat_Server
     {
         public static void Execute()
         {
-            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, Commands.CommandArgument);
+            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, Commands.CommandArguments[0]);
+        }
+    }
+    class PrivateMessageAction
+    {
+        public static void Execute()
+        {
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                bool parse = int.TryParse(Commands.CommandArguments[0], out int outNum);
+                if (parse && ServerHandler.activeClients[i].ID == outNum)
+                {
+                    if (Commands.CommandArguments[1] != null)
+                    {
+                        ServerMessage.ServerClientMessage(ServerHandler.activeClients[i].TCPClient, ConsoleColor.Yellow, Commands.CommandArguments[1]);
+                    }
+                }
+            }
         }
     }
     class BanIPAction
@@ -128,7 +152,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
+                bool parse = int.TryParse(Commands.CommandArguments[0], out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     string message = String.Format("({0}) {1} has been banned.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);
@@ -151,7 +175,7 @@ namespace TCPChat_Server
         {
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                bool parse = int.TryParse(Commands.CommandArgument, out int outNum);
+                bool parse = int.TryParse(Commands.CommandArguments[0], out int outNum);
                 if (parse && ServerHandler.activeClients[i].ID == outNum)
                 {
                     string message = String.Format("({0}) {1} has been kicked.", ServerHandler.activeClients[i].ID, ServerHandler.activeClients[i].Username);

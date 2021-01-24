@@ -14,7 +14,7 @@ namespace TCPChat_Server
                     clientVersion,
                     Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-                ServerMessage.ServerClientMessage(instance, ConsoleColor.Yellow, message);
+                ServerMessage.ServerClientMessage(instance.client, ConsoleColor.Yellow, message);
 
                 instance.client.Close();
                 return false;

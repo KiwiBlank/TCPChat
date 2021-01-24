@@ -10,6 +10,10 @@ namespace CommonDefines
         {
             CommonDefines.ConsoleOutput.OutputServerMessage(list[0].Message, list[0].Color);
         }
+        public static void RecievedPrivateMessageFormat(List<PrivateMessageFormat> list)
+        {
+            CommonDefines.ConsoleOutput.OutputPrivateMessage(list[0].Message, list[0].Color, list[0].SenderUsername, list[0].SenderID);
+        }
         public static void RecievedMessageReplyFormat(List<MessageReplyFormat> list, int channelID)
         {
             // CLIENT CAN ONLY RECIEVE MESSAGEREPLYFORMAT AS OF 1.3.0
@@ -40,6 +44,15 @@ namespace CommonDefines
             Console.ForegroundColor = color;
 
             string output = String.Format("SERVER - {0}", message);
+
+            Console.WriteLine(output);
+            Console.ResetColor();
+        }
+        public static void OutputPrivateMessage(string message, ConsoleColor color, string senderUsername, int senderID)
+        {
+            Console.ForegroundColor = color;
+
+            string output = String.Format("PRIVATE - ({0}){1}:{2}", senderID, senderUsername, message);
 
             Console.WriteLine(output);
             Console.ResetColor();

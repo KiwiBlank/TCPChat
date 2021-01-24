@@ -23,6 +23,10 @@ namespace TCPChat_Server
                     ClientChannelSwitch(instance, list[0].Parameters);
                     // Replies in method inside ChannelHandler
                     break;
+                case CommandDataTypes.PRIVATEMESSSAGE:
+                    ClientPrivateMessage(instance, list[0].Parameters);
+                    // Replies in method inside ChannelHandler
+                    break;
                 default:
                     break;
             }
@@ -73,6 +77,32 @@ namespace TCPChat_Server
         public static void ClientChannelSwitch(ClientInstance instance, string parameters)
         {
             ChannelHandler.ClientRequestsChannelSwitch(instance, parameters);
+        }
+        public static void ClientPrivateMessage(ClientInstance instance, string parameters)
+        {
+            string[] args = parameters.Split(',');
+
+            for (int i = 0; i < ServerHandler.activeClients.Count; i++)
+            {
+                if (args[0] == ServerHandler.activeClients[i].ID.ToString() && !String.IsNullOrEmpty(args[1]))
+                {
+                    // Get the index of the client sending the message.
+                    int index = ServerMessage.FindClientKeysIndex(instance.client);
+
+                    // Send the message to the reciever.
+                    ServerMessage.ClientPrivateMessage(
+                        ServerHandler.activeClients[i].TCPClient,
+                        ConsoleColor.Yellow,
+                        args[1],
+                        ServerHandler.activeClients[index].ID,
+                        ServerHandler.activeClients[index].Username
+                        );
+
+                    // Send a message to the sender to confirm the message has been sent.
+                    ServerMessage.ServerClientMessage(instance.client, ConsoleColor.Yellow, "Message has been sent.");
+                }
+            }
+
         }
     }
 }
