@@ -62,7 +62,7 @@ namespace TCPChat_Client
                 Option = "msg",
                 Action = PrivateMessageAction.Execute,
                 Alias = { },
-                Help = "Input a message to send to a specific client."
+                Help = "Input a client's ID & a message to send to a specific client."
             });
         }
     }
