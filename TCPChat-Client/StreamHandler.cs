@@ -26,19 +26,21 @@ namespace TCPChat_Client
         }
         public static void SendConnectionMessage(TcpClient client, NetworkStream stream)
         {
-            List<ConnectionMessageFormat> message = new List<ConnectionMessageFormat>();
+            List<ConnectionMessageFormat> message = new();
 
             // See the messageformat class in VariableDefines.
             // The formatting for a client's message
             message.Add(new ConnectionMessageFormat
             {
-                messageType = MessageTypes.CONNECTION,
+                MessageType = MessageTypes.CONNECTION,
+                Username = UserConfigFormat.userChosenName,
                 RSAModulus = Encryption.RSAModulus,
                 RSAExponent = Encryption.RSAExponent,
-                ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                ClientVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                UserNameColor = UserConfigFormat.userChosenColor
             });
             // Do not encrypt and do not read console after.
-            MessageHandler.SerializePrepareMessage(message, client, stream, false, false);
+            MessageHandler.PrepareMessage(message, client, stream, false, false);
         }
     }
 

@@ -15,11 +15,18 @@ namespace TCPChat_Server
 
             if (!File.Exists(fileDir))
             {
-                List<ServerConfigFormat> defaultConfig = new List<ServerConfigFormat>();
+                List<ServerConfigFormat> defaultConfig = new();
 
-                defaultConfig.Add(new ServerConfigFormat { serverName = "Your Server Name", serverWelcomeMessage = "Welcome to my server!" });
+                defaultConfig.Add(new ServerConfigFormat
+                {
+                    ServerName = "Your Server Name",
+                    ServerWelcomeMessage = "Welcome to my server!",
+                    ClientTimeBetweenMessages = 500,
+                    DefaultChannelID = 0,
+                    EnableVersionCheck = true
+                });
 
-                string serialize = Serialization.Serialize(defaultConfig);
+                string serialize = Serialization.Serialize(defaultConfig, true);
 
                 File.WriteAllText(fileDir, serialize);
 
@@ -31,18 +38,13 @@ namespace TCPChat_Server
         }
         public static void ReadConfig(string configRead)
         {
-            List<ServerConfigFormat> userConfig = DeserializeConfig(configRead);
+            List<ServerConfigFormat> userConfig = JsonSerializer.Deserialize<List<ServerConfigFormat>>(configRead);
 
-            ServerConfigFormat.serverChosenName = userConfig[0].serverName;
-            ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].serverWelcomeMessage;
-
-        }
-
-        public static List<ServerConfigFormat> DeserializeConfig(string config)
-        {
-            List<ServerConfigFormat> json = JsonSerializer.Deserialize<List<ServerConfigFormat>>(config);
-
-            return json;
+            ServerConfigFormat.serverChosenName = userConfig[0].ServerName;
+            ServerConfigFormat.serverChosenWelcomeMessage = userConfig[0].ServerWelcomeMessage;
+            ServerConfigFormat.serverChosenClientTime = userConfig[0].ClientTimeBetweenMessages;
+            ServerConfigFormat.serverChosenDefaultChannelID = userConfig[0].DefaultChannelID;
+            ServerConfigFormat.serverChosenVersionCheck = userConfig[0].EnableVersionCheck;
         }
     }
 }

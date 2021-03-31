@@ -7,15 +7,17 @@ using System.Threading;
 
 namespace TCPChat_Server
 {
+    public class ClientInstance
+    {
+        public TcpClient client;
+        public NetworkStream stream;
+        // Client verified means that the client has sent over its encryption keys, and therefore can send encrypted messages.
+        public bool clientVerified = false;
+    }
     class ServerHandler
     {
-        public static List<ClientList> activeClients = new List<ClientList>();
+        public static List<ClientList> activeClients = new();
 
-        // Method to send messages from the server to a client.
-        public static void SendMessage(byte[] data, NetworkStream stream)
-        {
-            StreamHandler.WriteToStream(stream, data);
-        }
         public static void StartServer(string serverIPString, string portServer)
         {
             Console.Clear();
@@ -46,12 +48,42 @@ namespace TCPChat_Server
             }
             catch (Exception e)
             {
+
                 Console.WriteLine("Exception: {0}", e);
                 server.Stop();
             }
 
             Console.WriteLine("\nHit enter to continue...");
             Console.ReadLine();
+        }
+
+        // Console Read Loop
+        public static void InputMessage()
+        {
+            new Thread(() =>
+            {
+                string messageString = Console.ReadLine();
+                // Disallow sending empty information to stream.
+                if (!string.IsNullOrWhiteSpace(messageString))
+                {
+                    // Check if first character is / which means a command is being input.
+                    if (messageString.Substring(0, 1) == "/")
+                    {
+
+                        Commands.GetCommandType(messageString);
+                        InputMessage();
+
+                    }
+                    else
+                    {
+                        InputMessage();
+                    }
+                }
+                else
+                {
+                    InputMessage();
+                }
+            }).Start();
         }
 
         // The object that is used for each client.
@@ -62,30 +94,79 @@ namespace TCPChat_Server
             // Get a stream object for reading and writing
             try
             {
-                NetworkStream stream = client.GetStream();
+                ClientInstance instance = new ClientInstance
+                {
+                    client = client,
+                    stream = client.GetStream()
+                };
 
-                Console.WriteLine("{0} Has Connected", ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
-
-
+                // Check if client's IP is banned.
+                if (Bans.IsBanned(((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString()))
+                {
+                    Console.WriteLine("{0} Was refused connection, client is banned.", ((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString());
+                    instance.client.Close();
+                }
                 // Loop to receive all the data sent by the client.
+                MessageHandler.RecieveMessage(instance);
 
-                MessageHandler.RecieveMessage(stream, client);
-
+                // Will check if the client is actually sending and recieiving messages.
+                ClientHeartbeat(instance);
             }
+            // ObjectDisposedException does not contain an error code, 
+            // therefore it can not return a custom message for the moment.
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
+            // Any other exception should have an error code.
+            // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes
             catch (Exception e)
             {
-                Console.WriteLine("Exception: {0}", e);
+
+                int excID = ExceptionData.ExceptionIdentification(e);
+                int index = ServerMessage.FindClientKeysIndex(client);
+                string message;
+
+                switch (excID)
+                {
+                    // Seems that 10054 now appears as of .NET 5 when a disconnect occurs.
+                    // Need to investigate if 10053 is still active.
+                    case 10054:
+                        message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
+                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
+                        break;
+                    case 10053:
+                        message = String.Format("({0}) {1} disconnected.", activeClients[index].ID, activeClients[index].Username);
+                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, message);
+                        break;
+                    // 10004 does not need certain handling messages.
+                    // It appears when an user is kicked or banned.
+                    // May need to be investigated further.
+                    case 10004:
+                        break;
+                    default:
+                        Console.WriteLine("Exception: {0}", e);
+                        break;
+                }
+
                 client.Close();
             }
         }
-        public static void SerializePrepareWelcome(List<WelcomeMessageFormat> message, NetworkStream stream)
+        public static void ClientHeartbeat(ClientInstance instance)
         {
-            string json = Serialization.Serialize(message);
-
-            byte[] data = Serialization.AddEndCharToMessage(json);
-
-            SendMessage(data, stream);
+            bool active = false;
+            for (int i = 0; i < activeClients.Count; i++)
+            {
+                if (activeClients[i].TCPClient == instance.client)
+                {
+                    active = true;
+                }
+            }
+            if (!active)
+            {
+                Console.WriteLine("{0} Was kicked, user did not attempt communication.", ((IPEndPoint)instance.client.Client.RemoteEndPoint).Address.ToString());
+                instance.client.Close();
+            }
         }
-
     }
 }

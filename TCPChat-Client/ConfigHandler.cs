@@ -14,11 +14,15 @@ namespace TCPChat_Client
 
             if (!File.Exists(fileDir))
             {
-                List<UserConfigFormat> defaultConfig = new List<UserConfigFormat>();
+                List<UserConfigFormat> defaultConfig = new();
 
-                defaultConfig.Add(new UserConfigFormat { Username = Environment.MachineName, UserNameColor = ConsoleColor.Gray });
+                defaultConfig.Add(new UserConfigFormat
+                {
+                    Username = Environment.MachineName,
+                    UserNameColor = ConsoleColor.Gray
+                });
 
-                string serialize = Serialization.Serialize(defaultConfig);
+                string serialize = Serialization.Serialize(defaultConfig, true);
 
                 File.WriteAllText(fileDir, serialize);
 

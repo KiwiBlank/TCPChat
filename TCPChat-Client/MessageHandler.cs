@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 
 namespace TCPChat_Client
@@ -12,20 +9,19 @@ namespace TCPChat_Client
     class MessageHandler
     {
         /// Serialize the messageFormat with json to transmit.
-        public static void SerializePrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
+        public static void PrepareMessage<T>(List<T> message, TcpClient client, NetworkStream stream, bool Encrypt, bool loopReadInput)
         {
-            string json = Serialization.Serialize(message);
+            string json = Serialization.Serialize(message, false);
 
             byte[] data = Serialization.AddEndCharToMessage(json);
 
             // Encrypts message and sends.
             if (Encrypt)
             {
-                EncryptSendMessage(data, client, stream);
-
+                EncryptSendMessage(data, stream);
             }
             // Does not encrypt, just sends.
-            if (!Encrypt)
+            else
             {
                 StreamHandler.WriteToStream(stream, data);
             }
@@ -36,8 +32,8 @@ namespace TCPChat_Client
             }
         }
 
-        // Write to the stream, then continue looping for new console input.
-        public static void EncryptSendMessage(byte[] message, TcpClient client, NetworkStream stream)
+        // Finalize message strucutre then write.
+        public static void EncryptSendMessage(byte[] message, NetworkStream stream)
         {
             // Encrypt Message Data
             byte[] encrypt = Encryption.AESEncrypt(message, Encryption.AESKey, Encryption.AESIV);
@@ -51,32 +47,39 @@ namespace TCPChat_Client
         // Console Read Loop
         public static void InputMessage(TcpClient client, NetworkStream stream)
         {
-
             new Thread(() =>
             {
                 string messageString = Console.ReadLine();
                 // Disallow sending empty information to stream.
                 if (!string.IsNullOrWhiteSpace(messageString))
                 {
-                    List<MessageFormat> newMessage = new List<MessageFormat>();
-
-                    // See the messageformat class in VariableDefines.
-                    // The formatting for a client's message
-                    newMessage.Add(new MessageFormat
+                    // Check if first character is / which means a command is being input.
+                    if (messageString.Substring(0, 1) == "/")
                     {
-                        messageType = MessageTypes.MESSAGE,
-                        message = messageString,
-                        Username = UserConfigFormat.userChosenName,
-                        UserNameColor = UserConfigFormat.userChosenColor
-                    });
-                    SerializePrepareMessage(newMessage, client, stream, true, true);
+
+                        Commands.GetCommandType(messageString);
+                        InputMessage(client, stream);
+
+                    }
+                    else
+                    // Regular message.
+                    {
+                        List<MessageFormat> newMessage = new();
+
+                        // See the messageformat class in VariableDefines.
+                        // The formatting for a client's message
+                        newMessage.Add(new MessageFormat
+                        {
+                            MessageType = MessageTypes.MESSAGE,
+                            Message = messageString
+                        });
+                        PrepareMessage(newMessage, client, stream, true, true);
+                    }
                 }
                 else
                 {
                     InputMessage(client, stream);
                 }
-
-
             }).Start();
         }
 
@@ -85,54 +88,22 @@ namespace TCPChat_Client
         {
             while (true)
             {
-
                 Byte[] data = new Byte[8192]; // Unsure what this should be atm.
                 Int32 bytes = stream.Read(data, 0, data.Length);
 
-                // Try catch as to check whether data is valid json.
-                // Not a very future proof solution, but gets the job done.
-                try
+                // Check message type
+                // Even if message type is encrypted
+                // The decrypted message can be an different type.
+                switch (Common.ReturnMessageType(data))
                 {
-                    string responseData = Encoding.ASCII.GetString(data, 0, bytes);
-                    string text = MessageSerialization.ReturnEndOfStreamString(responseData);
-
-                    List<WelcomeMessageFormat> connectList = Serialization.DeserializeWelcomeMessageFormat(text);
-
-                    if (VerifyVersion(connectList[0].ServerVersion))
-                    {
-                        OutputMessage.ClientRecievedConnectedMessageFormat(connectList);
-                    }
-                    else
-                    {
-                        stream.Close();
-                        Console.Clear();
-                        Console.WriteLine("Your version of: {0} does not match the server: {1}", Assembly.GetExecutingAssembly().GetName().Version.ToString(), connectList[0].ServerVersion);
-                    }
-
-
+                    // Welcome can not be encrypted as that is when keys are sent.
+                    case MessageTypes.WELCOME:
+                        ClientRecievedTypes.ClientRecievedWelcomeMessage(data, bytes);
+                        break;
+                    case MessageTypes.ENCRYPTED:
+                        ClientRecievedTypes.ClientRecievedEncryptedMessage(data);
+                        break;
                 }
-                catch (JsonException)
-                {
-
-                    string message = Encryption.DecryptMessageData(data);
-
-                    string messageFormatted = MessageSerialization.ReturnEndOfStreamString(message);
-                    List<MessageFormat> messageList = Serialization.DeserializeMessageFormat(messageFormatted);
-                    OutputMessage.ClientRecievedMessageFormat(messageList);
-                }
-            }
-        }
-        // Method to compare the server's version and client.
-        // The check is also done on the server, but this does another check and outputs a helpful message.
-        public static bool VerifyVersion(string serverVersion)
-        {
-            if (serverVersion == Assembly.GetExecutingAssembly().GetName().Version.ToString())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
     }

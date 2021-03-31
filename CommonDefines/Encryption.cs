@@ -21,6 +21,12 @@ namespace CommonDefines
 
         public const int keyLength = 256;
 
+
+
+        // TODO Add other encryption libraries which are more tested.
+        // Or redo encryption system. It is hard for me to verify the security of the current system.
+
+
         public static string DecryptMessageData(byte[] dataMessage)
         {
             // Extract the 256 bytes that make up the AES Key and IV at the beginning of the message.
@@ -47,8 +53,6 @@ namespace CommonDefines
             byte[] AESDecrypt = Encryption.AESDecrypt(RemoveKeysFromDataBytes, AESKey, AESIV);
 
             string message = System.Text.Encoding.ASCII.GetString(AESDecrypt);
-
-
 
             return message;
         }
@@ -79,9 +83,11 @@ namespace CommonDefines
 
         public static RSAParameters RSAParamaterCombiner(byte[] modulus, byte[] exponent)
         {
-            RSAParameters result = new RSAParameters();
-            result.Modulus = modulus;
-            result.Exponent = exponent;
+            RSAParameters result = new RSAParameters
+            {
+                Modulus = modulus,
+                Exponent = exponent
+            };
 
             return result;
         }
@@ -89,7 +95,6 @@ namespace CommonDefines
 
         public static byte[] AESDecrypt(byte[] data, byte[] key, byte[] IV)
         {
-
             using (var aes = Aes.Create())
             {
                 aes.KeySize = 128;
@@ -114,7 +119,6 @@ namespace CommonDefines
         }
         public static byte[] AESEncrypt(byte[] data, byte[] key, byte[] IV)
         {
-
             using (var aes = Aes.Create())
             {
                 aes.KeySize = 128;
@@ -138,8 +142,6 @@ namespace CommonDefines
         }
         public static byte[] RSAEncrypt(byte[] data, RSAParameters publicKey)
         {
-
-
             RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keySize);
 
             csp.ImportParameters(publicKey);
@@ -150,7 +152,6 @@ namespace CommonDefines
         }
         public static byte[] RSADecrypt(byte[] data, RSAParameters privateKey)
         {
-
             RSACryptoServiceProvider csp = new RSACryptoServiceProvider(keySize);
 
             csp.ImportParameters(privateKey);
@@ -162,8 +163,7 @@ namespace CommonDefines
 
         public static byte[] ExtractKeyFromMessage(byte[] data)
         {
-            List<byte> byteList = new List<byte>();
-
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -177,7 +177,7 @@ namespace CommonDefines
         }
         public static byte[] ExtractIVFromBytes(byte[] data)
         {
-            List<byte> byteList = new List<byte>();
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -191,7 +191,7 @@ namespace CommonDefines
         }
         public static byte[] ExtractKeyFromBytes(byte[] data)
         {
-            List<byte> byteList = new List<byte>();
+            List<byte> byteList = new();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -205,8 +205,8 @@ namespace CommonDefines
         }
         public static byte[] AppendKeyToMessage(byte[] data, byte[] IV, byte[] key, RSAParameters publicKey)
         {
-            List<byte> listKey = new List<byte>();
-            List<byte> listMain = new List<byte>();
+            List<byte> listKey = new();
+            List<byte> listMain = new();
 
             // Add the keys to a separate list
             listKey.AddRange(key);
@@ -221,7 +221,6 @@ namespace CommonDefines
             byte[] finalBytes = listMain.ToArray();
 
             return finalBytes;
-
         }
     }
 }

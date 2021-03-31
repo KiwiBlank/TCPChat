@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>TCPChat_Server</RootNamespace>
     <ApplicationIcon>tcpchatlogo1.ico</ApplicationIcon>
     <Authors>Kiwi Blank</Authors>
@@ -14,7 +14,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\build\</OutputPath>
-    <VersionSuffix>1.2.0.$([System.DateTime]::UtcNow.ToString(mmff))</VersionSuffix>
+    <VersionSuffix>1.3.0.$([System.DateTime]::UtcNow.ToString(MMdd))</VersionSuffix>
     <AssemblyVersion Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</AssemblyVersion>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
   </PropertyGroup>

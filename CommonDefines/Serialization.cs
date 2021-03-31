@@ -8,34 +8,66 @@ namespace CommonDefines
 {
     public class Serialization
     {
+        public static List<PrivateMessageFormat> DeserializePrivateMessageFormat(string text)
+        {
+            List<PrivateMessageFormat> messageList = JsonSerializer.Deserialize<List<PrivateMessageFormat>>(text);
+
+            return messageList;
+        }
+        public static List<DataReplyFormat> DeserializeDataReplyFormat(string text)
+        {
+            List<DataReplyFormat> messageList = JsonSerializer.Deserialize<List<DataReplyFormat>>(text);
+
+            return messageList;
+        }
+        public static List<DataRequestFormat> DeserializeDataRequestFormat(string text)
+        {
+            List<DataRequestFormat> messageList = JsonSerializer.Deserialize<List<DataRequestFormat>>(text);
+
+            return messageList;
+        }
+        public static List<ServerMessageFormat> DeserializeServerMessageFormat(string text)
+        {
+            List<ServerMessageFormat> messageList = JsonSerializer.Deserialize<List<ServerMessageFormat>>(text);
+
+            return messageList;
+        }
         public static List<ConnectionMessageFormat> DeserializeConnectionMessageFormat(string text)
         {
-            List<ConnectionMessageFormat> messageList = new List<ConnectionMessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<ConnectionMessageFormat>>(text);
+            List<ConnectionMessageFormat> messageList = JsonSerializer.Deserialize<List<ConnectionMessageFormat>>(text);
 
             return messageList;
         }
         public static List<MessageFormat> DeserializeMessageFormat(string text)
         {
-            List<MessageFormat> messageList = new List<MessageFormat>();
+            List<MessageFormat> messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
 
-            messageList = JsonSerializer.Deserialize<List<MessageFormat>>(text);
+            return messageList;
+        }
+        public static List<MessageReplyFormat> DeserializeMessageReplyFormat(string text)
+        {
+            List<MessageReplyFormat> messageList = JsonSerializer.Deserialize<List<MessageReplyFormat>>(text);
 
             return messageList;
         }
         public static List<WelcomeMessageFormat> DeserializeWelcomeMessageFormat(string text)
         {
-            List<WelcomeMessageFormat> messageList = new List<WelcomeMessageFormat>();
-
-            messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);
+            List<WelcomeMessageFormat> messageList = JsonSerializer.Deserialize<List<WelcomeMessageFormat>>(text);
 
             return messageList;
         }
 
-        public static string Serialize<T>(List<T> list)
+        public static string Serialize<T>(List<T> list, bool indent)
         {
-            string json = JsonSerializer.Serialize(list);
+            string json;
+            if (indent)
+            {
+                json = JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true });
+            }
+            else
+            {
+                json = JsonSerializer.Serialize(list);
+            }
 
             return json;
         }
