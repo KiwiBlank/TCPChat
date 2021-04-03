@@ -16,31 +16,25 @@ namespace TCPChat_Server
 
     public class ChannelHandler
     {
-        public static string channelDataFileLocation;
+        public static string channelsFilePath;
+        public static string channelsFileName;
+        public static string channelsFileCombined;
         public static List<ChannelFileFormat> serverChannels;
         public static void CreateChannelDataFile()
         {
-            channelDataFileLocation = String.Format(Path.Combine(Directory.GetCurrentDirectory(), "channels.json"));
-            if (!ChannelDataFileExists())
+            channelsFilePath = String.Format(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TCPChat"));
+            channelsFileName = "channels.json";
+            channelsFileCombined = Path.Combine(channelsFilePath, channelsFileName);
+            if (!Directory.Exists(channelsFilePath) || !File.Exists(channelsFileCombined))
             {
                 WriteDefaultChannels();
             }
+
             ReadChannelsFile();
 
             if (!VerifyChannelStructure())
             {
-                File.WriteAllText(channelDataFileLocation, "FILE FORMAT VERIFICATION FAILED.");
-            }
-        }
-        public static bool ChannelDataFileExists()
-        {
-            if (File.Exists(channelDataFileLocation))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                File.WriteAllText(channelsFileCombined, "FILE FORMAT VERIFICATION FAILED.");
             }
         }
         public static void WriteDefaultChannels()
@@ -65,14 +59,14 @@ namespace TCPChat_Server
 
             string json = JsonSerializer.Serialize(defaultChannels, new JsonSerializerOptions { WriteIndented = true });
 
-            File.Create(channelDataFileLocation).Dispose();
-            File.WriteAllText(channelDataFileLocation, json);
+            Directory.CreateDirectory(channelsFilePath);
+            File.WriteAllText(channelsFileCombined, json);
         }
         public static void ReadChannelsFile()
         {
-            if (ChannelDataFileExists())
+            if (!Directory.Exists(channelsFilePath) || !File.Exists(channelsFileCombined))
             {
-                string fileRead = File.ReadAllText(channelDataFileLocation);
+                string fileRead = File.ReadAllText(channelsFileCombined);
                 try
                 {
                     serverChannels = JsonSerializer.Deserialize<List<ChannelFileFormat>>(fileRead);

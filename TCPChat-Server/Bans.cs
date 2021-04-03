@@ -5,41 +5,25 @@ namespace TCPChat_Server
 {
     class Bans
     {
-        public static string bansFileLocation;
-        public static bool BanDataFileExists()
-        {
-            if (File.Exists(bansFileLocation))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        public static string bansFilePath;
+        public static string bansFileName;
+        public static string bansFileCombined;
         public static void CreateBanFile()
         {
-            bansFileLocation = String.Format(Path.Combine(Directory.GetCurrentDirectory(), "bans.dat"));
-            if (!BanDataFileExists())
-            {
-                File.Create(bansFileLocation).Dispose();
-            }
+            bansFilePath = String.Format(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TCPChat"));
+            bansFileName = "bans.dat";
+            bansFileCombined = Path.Combine(bansFilePath, bansFileName);
+            BanFileCheck();
         }
         public static void AddNewBan(string IP)
         {
-            if (!BanDataFileExists())
-            {
-                File.Create(bansFileLocation).Dispose();
-            }
-            File.AppendAllText(bansFileLocation, IP);
+            BanFileCheck();
+            File.AppendAllText(bansFileCombined, IP);
         }
         public static bool IsBanned(string IP)
         {
-            if (!BanDataFileExists())
-            {
-                File.Create(bansFileLocation).Dispose();
-            }
-            foreach (string line in File.ReadLines(bansFileLocation))
+            BanFileCheck();
+            foreach (string line in File.ReadLines(bansFileCombined))
             {
                 if (line.Contains(IP))
                 {
@@ -47,6 +31,14 @@ namespace TCPChat_Server
                 }
             }
             return false;
+        }
+        public static void BanFileCheck()
+        {
+            if (!Directory.Exists(bansFilePath) || !File.Exists(bansFileCombined))
+            {
+                Directory.CreateDirectory(bansFilePath);
+                File.Create(bansFileCombined);
+            }
         }
     }
 }

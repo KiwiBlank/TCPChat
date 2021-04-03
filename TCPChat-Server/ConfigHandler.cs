@@ -8,12 +8,16 @@ namespace TCPChat_Server
 {
     class ConfigHandler
     {
+        public static string configFilePath;
+        public static string configFileName;
+        public static string configFileCombined;
 
         public static void WriteDefaultConfig()
         {
-            string fileDir = String.Format(Path.Combine(Directory.GetCurrentDirectory(), "serverconfig.json"));
-
-            if (!File.Exists(fileDir))
+            configFilePath = String.Format(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TCPChat"));
+            configFileName = "serverconfig.json";
+            configFileCombined = Path.Combine(configFilePath, configFileName);
+            if (!Directory.Exists(configFilePath) || !File.Exists(configFileCombined))
             {
                 List<ServerConfigFormat> defaultConfig = new();
 
@@ -28,11 +32,11 @@ namespace TCPChat_Server
 
                 string serialize = Serialization.Serialize(defaultConfig, true);
 
-                File.WriteAllText(fileDir, serialize);
-
+                Directory.CreateDirectory(configFilePath);
+                File.WriteAllText(configFileCombined, serialize);
             }
 
-            string configRead = File.ReadAllText(fileDir);
+            string configRead = File.ReadAllText(configFileCombined);
             ReadConfig(configRead);
 
         }
