@@ -17,8 +17,8 @@
 ## Build & Installation
 
 ### Prerequisites
-#### **NOTE: .NET Core is not required when running the included binaries.**
-- .NET Core 3.1 [(Download)](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+#### **NOTE: .NET 5 is not required when running the included binaries.**
+- .NET 5 [(Download)](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 ### Building
 To build the solution, run
