@@ -48,9 +48,18 @@ namespace TCPChat_Server
 
             int index = ServerMessage.FindClientKeysIndex(instance.client);
 
-            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
 
-            StreamHandler.WriteToStream(instance.stream, encrypted);
+            if (ServerHandler.activeClients[index].EnableEncryption)
+            {
+                byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+                StreamHandler.WriteToStream(instance.stream, encrypted);
+            }
+            else
+            {
+                StreamHandler.WriteToStream(instance.stream, data);
+            }
+
+
         }
         public static string ClientListString()
         {

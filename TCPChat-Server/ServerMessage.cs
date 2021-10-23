@@ -40,8 +40,15 @@ namespace TCPChat_Server
             byte[] data = Serialization.AddEndCharToMessage(json);
 
             int index = FindClientKeysIndex(client);
+            byte[] encrypted;
 
-            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+            if (ServerHandler.activeClients[index].EnableEncryption)
+            {
+                encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+            } else
+            {
+                encrypted = data;
+            }
 
             StreamHandler.WriteToStream(client.GetStream(), encrypted);
         }
@@ -66,7 +73,17 @@ namespace TCPChat_Server
 
             int index = FindClientKeysIndex(client);
 
-            byte[] encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+
+            byte[] encrypted;
+
+            if (ServerHandler.activeClients[index].EnableEncryption)
+            {
+                encrypted = MessageHandler.EncryptMessage(data, ServerHandler.activeClients[index].RSAModulus, ServerHandler.activeClients[index].RSAExponent);
+            }
+            else
+            {
+                encrypted = data;
+            }
 
             StreamHandler.WriteToStream(client.GetStream(), encrypted);
         }

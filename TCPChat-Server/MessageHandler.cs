@@ -39,7 +39,15 @@ namespace TCPChat_Server
                 // Same channel check.
                 if (ServerHandler.activeClients[i].ChannelID == ServerHandler.activeClients[index].ChannelID)
                 {
-                    byte[] encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+                    byte[] encrypted;
+                    if (ServerHandler.activeClients[i].EnableEncryption)
+                    {
+                        encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+                    }
+                    else
+                    {
+                        encrypted = data;
+                    }
                     // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
                     try
                     {
@@ -64,7 +72,15 @@ namespace TCPChat_Server
 
             for (int i = 0; i < ServerHandler.activeClients.Count; i++)
             {
-                byte[] encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+                byte[] encrypted;
+                if (ServerHandler.activeClients[i].EnableEncryption)
+                {
+                    encrypted = EncryptMessage(data, ServerHandler.activeClients[i].RSAModulus, ServerHandler.activeClients[i].RSAExponent);
+
+                } else
+                {
+                    encrypted = data;
+                }
                 // Try to send to [i] client, if the client does not exist anymore, remove from activeClients.
                 try
                 {
@@ -114,7 +130,8 @@ namespace TCPChat_Server
                     // Is client verified, meaning client has established initial connection and communication.
                     if (instance.clientVerified)
                     {
-                        VerifiedRecieve(instance, bytesResized);
+                        int index = ServerMessage.FindClientKeysIndex(instance.client);
+                        VerifiedRecieve(instance, bytesResized, ServerHandler.activeClients[index].EnableEncryption);
                     }
                     else
                     {
@@ -123,70 +140,120 @@ namespace TCPChat_Server
                 }
             }
         }
-        public static void VerifiedRecieve(ClientInstance instance, byte[] bytes)
+        public static void VerifiedRecieve(ClientInstance instance, byte[] bytes, bool encrypt)
         {
             // Random CryptographicException that i am not able to replicate
             // TODO Investigate reason for exception.
             string message = "";
-            try
+            if (encrypt)
             {
-                message = Encryption.DecryptMessageData(bytes);
+                try
+                {
+                    message = Encryption.DecryptMessageData(bytes);
 
-            }
-            catch (CryptographicException)
-            {
+                }
+                catch (CryptographicException)
+                {
 
-                int index = ServerMessage.FindClientKeysIndex(instance.client);
-                string serverMessage = String.Format("{0} Was kicked due to a cryptography error.", ServerHandler.activeClients[index].Username);
-                ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
-                instance.client.Close();
-            }
-
-            string messageFormatted = Common.ReturnEndOfStream(message);
-
-            byte[] messageBytes = Encoding.ASCII.GetBytes(messageFormatted);
-
-            List<MessageFormat> messageList;
-
-            switch (Common.ReturnMessageType(messageBytes))
-            {
-                case MessageTypes.MESSAGE:
                     int index = ServerMessage.FindClientKeysIndex(instance.client);
+                    string serverMessage = String.Format("{0} Was kicked due to a cryptography error.", ServerHandler.activeClients[index].Username);
+                    ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                    instance.client.Close();
+                }
 
-                    // Error when deserializing message.
-                    // Could mean corrupt or icorrect data has been transmitted.
-                    try
-                    {
-                        messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+                string messageFormatted = Common.ReturnEndOfStream(message);
 
-                        List<MessageReplyFormat> replyFormat = new();
-                        replyFormat.Add(new MessageReplyFormat
+                byte[] messageBytes = Encoding.ASCII.GetBytes(messageFormatted);
+
+                List<MessageFormat> messageList;
+
+                switch (Common.ReturnMessageType(messageBytes))
+                {
+                    case MessageTypes.MESSAGE:
+                        int index = ServerMessage.FindClientKeysIndex(instance.client);
+
+                        // Error when deserializing message.
+                        // Could mean corrupt or icorrect data has been transmitted.
+                        try
                         {
-                            MessageType = MessageTypes.MESSAGEREPLY,
-                            Message = messageList[0].Message,
-                            ID = ServerHandler.activeClients[index].ID,
-                            Username = ServerHandler.activeClients[index].Username,
-                            UsernameColor = ServerHandler.activeClients[index].UsernameColor,
-                        });
+                            messageList = Serialization.DeserializeMessageFormat(messageFormatted);
 
-                        ConsoleOutput.RecievedMessageReplyFormat(replyFormat, ServerHandler.activeClients[index].ChannelID);
+                            List<MessageReplyFormat> replyFormat = new();
+                            replyFormat.Add(new MessageReplyFormat
+                            {
+                                MessageType = MessageTypes.MESSAGEREPLY,
+                                Message = messageList[0].Message,
+                                ID = ServerHandler.activeClients[index].ID,
+                                Username = ServerHandler.activeClients[index].Username,
+                                UsernameColor = ServerHandler.activeClients[index].UsernameColor,
+                            });
+
+                            ConsoleOutput.RecievedMessageReplyFormat(replyFormat, ServerHandler.activeClients[index].ChannelID);
 
 
-                        // Encrypts the message and sends it to all clients.
-                        RepeatToAllClientsInChannel(replyFormat, instance);
-                    }
-                    catch (JsonException)
-                    {
-                        string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid message.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
-                        ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
-                        instance.client.Close();
-                    }
-                    break;
-                case MessageTypes.DATAREQUEST:
-                    List<DataRequestFormat> dataList = Serialization.DeserializeDataRequestFormat(messageFormatted);
-                    CommandHandler.RecievedDataRequest(instance, dataList);
-                    break;
+                            // Encrypts the message and sends it to all clients.
+                            RepeatToAllClientsInChannel(replyFormat, instance);
+                        }
+                        catch (JsonException)
+                        {
+                            string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid message.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
+                            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                            instance.client.Close();
+                        }
+                        break;
+                    case MessageTypes.DATAREQUEST:
+                        List<DataRequestFormat> dataList = Serialization.DeserializeDataRequestFormat(messageFormatted);
+                        CommandHandler.RecievedDataRequest(instance, dataList);
+                        break;
+                }
+            } else
+            {
+                message = Encoding.ASCII.GetString(bytes);
+
+                string messageFormatted = Common.ReturnEndOfStream(message);
+                List<MessageFormat> messageList;
+
+                switch (Common.ReturnMessageType(bytes))
+                {
+                    case MessageTypes.MESSAGE:
+                        int index = ServerMessage.FindClientKeysIndex(instance.client);
+
+                        // Error when deserializing message.
+                        // Could mean corrupt or icorrect data has been transmitted.
+                        try
+                        {
+                            messageList = Serialization.DeserializeMessageFormat(messageFormatted);
+
+                            List<MessageReplyFormat> replyFormat = new();
+                            replyFormat.Add(new MessageReplyFormat
+                            {
+                                MessageType = MessageTypes.MESSAGEREPLY,
+                                Message = messageList[0].Message,
+                                ID = ServerHandler.activeClients[index].ID,
+                                Username = ServerHandler.activeClients[index].Username,
+                                UsernameColor = ServerHandler.activeClients[index].UsernameColor,
+                            });
+
+                            ConsoleOutput.RecievedMessageReplyFormat(replyFormat, ServerHandler.activeClients[index].ChannelID);
+
+
+                            // Encrypts the message and sends it to all clients.
+                            RepeatToAllClientsInChannel(replyFormat, instance);
+                        }
+                        catch (JsonException)
+                        {
+                            string serverMessage = String.Format("({0}) {1} Was kicked due to an invalid message.", ServerHandler.activeClients[index].ID, ServerHandler.activeClients[index].Username);
+                            ServerMessage.ServerGlobalMessage(ConsoleColor.Yellow, serverMessage);
+                            instance.client.Close();
+                        }
+                        break;
+                    case MessageTypes.DATAREQUEST:
+                        List<DataRequestFormat> dataList = Serialization.DeserializeDataRequestFormat(messageFormatted);
+                        CommandHandler.RecievedDataRequest(instance, dataList);
+                        break;
+                }
             }
+
         }
         public static void NotVerifiedRecieve(ClientInstance instance, byte[] bytes)
         {
@@ -204,7 +271,8 @@ namespace TCPChat_Server
                 Username = list[0].Username,
                 RSAExponent = list[0].RSAExponent,
                 RSAModulus = list[0].RSAModulus,
-                UsernameColor = list[0].UserNameColor
+                UsernameColor = list[0].UserNameColor,
+                EnableEncryption = list[0].EnableEncryption
             });
 
             if (ServerConfigFormat.serverChosenVersionCheck)

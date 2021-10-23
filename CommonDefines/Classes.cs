@@ -51,6 +51,7 @@ namespace CommonDefines
         public byte[] RSAExponent { get; set; }
         public byte[] RSAModulus { get; set; }
         public ConsoleColor UsernameColor { get; set; }
+        public bool EnableEncryption { get; set; }
     }
     public class ServerMessageFormat
     {
@@ -69,6 +70,7 @@ namespace CommonDefines
         public byte[] RSAModulus { get; set; }
         public string ClientVersion { get; set; }
         public ConsoleColor UserNameColor { get; set; }
+        public bool EnableEncryption { get; set; }
     }
     public class WelcomeMessageFormat
     {

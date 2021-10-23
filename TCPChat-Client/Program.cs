@@ -10,6 +10,7 @@ namespace TCPChat_Client
     {
         public static TcpClient staticClient;
         public static NetworkStream staticStream;
+        public static bool EnableEncryption;
         static void Main(string[] args)
         {
             ConfigHandler.WriteDefaultConfig();
@@ -51,6 +52,7 @@ namespace TCPChat_Client
         // Prepare connection information.
         public static void InputConnectInfo()
         {
+            EnableEncryption = false;
 #if (DEVMODE)
 
             Connections.Connect("127.0.0.1", "6060");
