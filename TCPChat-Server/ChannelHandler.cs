@@ -80,7 +80,7 @@ namespace TCPChat_Server
         public static bool VerifyChannelStructure()
         {
             List<int> idList = new();
-            if (!serverChannels.Any())
+            if (serverChannels == null || serverChannels.Any() == false)
             {
                 return false;
             }
